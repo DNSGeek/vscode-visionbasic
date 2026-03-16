@@ -129,4 +129,4 @@ Always call `HALTINT` before exiting a program that uses raster interrupts.
 
 ## License
 
-MIT
+GPL v2
