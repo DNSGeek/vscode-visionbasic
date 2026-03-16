@@ -1,0 +1,127 @@
+{
+  "FOR loop": {
+    "prefix": "for",
+    "body": [
+      "${1:10} FOR ${2:I} = ${3:0} TO ${4:9}",
+      "${5:20}   REM loop body",
+      "${6:30} NEXT ${2:I}"
+    ],
+    "description": "FOR-TO-NEXT loop (integer variables only)"
+  },
+
+  "IF-THEN-ELSE": {
+    "prefix": "if",
+    "body": [
+      "${1:10} IF ${2:A} = ${3:0} THEN ${4:GOTO 100}",
+      "${5:20} ELSE ${6:GOTO 200}"
+    ],
+    "description": "IF-THEN with ELSE"
+  },
+
+  "GOSUB subroutine": {
+    "prefix": "sub",
+    "body": [
+      "${1:100} REM --- ${2:subroutine name} ---",
+      "${3:110}   ${4:REM body}",
+      "${5:120} RETURN"
+    ],
+    "description": "Subroutine with RETURN"
+  },
+
+  "PROC subroutine": {
+    "prefix": "proc",
+    "body": [
+      "${1:100} PROC ${2:myproc}.${3:param1}",
+      "${4:110}   PASS ${3:param1}",
+      "${5:120}   ${6:REM body}",
+      "${7:130} RETURN"
+    ],
+    "description": "PROC subroutine with parameter"
+  },
+
+  "Raster interrupt": {
+    "prefix": "interrupt",
+    "body": [
+      "${1:10} INTERRUPT ${2:100}, ${3:1000}",
+      "",
+      "${3:1000} STARTINT",
+      "${4:1010}   ${5:REM interrupt body}",
+      "${6:1020} INTEND ${7:1}",
+      "",
+      "${8:9000} HALTINT"
+    ],
+    "description": "Raster interrupt skeleton"
+  },
+
+  "Sprite setup": {
+    "prefix": "mob",
+    "body": [
+      "${1:10} MOBCLR",
+      "${2:20} MOB ${3:0}, 1, 0, 0, ${4:160}, ${5:100}, 0, 0",
+      "${6:30} MOBCOL ${7:7}, ${8:1}, ${9:2}"
+    ],
+    "description": "Basic sprite/MOB setup"
+  },
+
+  "SID sound setup": {
+    "prefix": "sound",
+    "body": [
+      "${1:10} VOICE ${2:1}",
+      "${3:20} ADSR ${4:0}, ${5:9}, ${6:0}, ${7:0}",
+      "${8:30} FREQ ${9:1000}",
+      "${10:40} WAVE 1, ${11:2}, 0, 0, 0"
+    ],
+    "description": "Basic SID voice setup (sawtooth)"
+  },
+
+  "Bitmap mode": {
+    "prefix": "bitmap",
+    "body": [
+      "${1:10} BITMAP 1, 0, 0, 0, 0, 0, 0, 0, 0, 1",
+      "${2:20} BMPCLR"
+    ],
+    "description": "Enable bitmap mode and clear"
+  },
+
+  "DATA-READ loop": {
+    "prefix": "data",
+    "body": [
+      "${1:10} DATA ${2:1, 2, 3, 4, 5}",
+      "${3:20} FOR ${4:I} = 1 TO ${5:5}",
+      "${6:30}   READ ${7:VAL}",
+      "${8:40}   ${9:REM process VAL}",
+      "${10:50} NEXT ${4:I}"
+    ],
+    "description": "DATA block with READ loop"
+  },
+
+  "Assembler block": {
+    "prefix": "asm",
+    "body": [
+      "${1:10} [${2:LDA #0}: ${3:STA \\$D020}]; ${4:comment}"
+    ],
+    "description": "Inline assembler block"
+  },
+
+  "POKE screen color": {
+    "prefix": "poke",
+    "body": [
+      "${1:10} POKE ${2:53280}, ${3:0}",
+      "${4:20} POKE ${5:53281}, ${6:0}"
+    ],
+    "description": "POKE border and background color"
+  },
+
+  "Joystick read": {
+    "prefix": "joy",
+    "body": [
+      "${1:10} ${2:J} = JOY(${3:2})",
+      "${4:20} IF ${2:J} AND 1 THEN ${5:REM up}",
+      "${6:30} IF ${2:J} AND 2 THEN ${7:REM down}",
+      "${8:40} IF ${2:J} AND 4 THEN ${9:REM left}",
+      "${10:50} IF ${2:J} AND 8 THEN ${11:REM right}",
+      "${12:60} IF ${2:J} AND 16 THEN ${13:REM fire}"
+    ],
+    "description": "Read joystick with direction checks"
+  }
+}

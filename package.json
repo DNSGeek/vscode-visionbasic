@@ -1,0 +1,59 @@
+{
+  "name": "visionbasic",
+  "displayName": "Vision BASIC",
+  "description": "Syntax highlighting, snippets and hover documentation for Vision BASIC (C64 enhanced BASIC)",
+  "version": "0.1.0",
+  "publisher": "DNSGeek",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "keywords": [
+    "C64",
+    "Commodore 64",
+    "BASIC",
+    "Vision BASIC",
+    "retro"
+  ],
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "contributes": {
+    "languages": [
+      {
+        "id": "visionbasic",
+        "aliases": [
+          "Vision BASIC",
+          "visionbasic"
+        ],
+        "extensions": [
+          ".bas"
+        ],
+        "configuration": "./language-configuration/language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "visionbasic",
+        "scopeName": "source.visionbasic",
+        "path": "./syntaxes/visionbasic.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "visionbasic",
+        "path": "./snippets/visionbasic.json"
+      }
+    ]
+  },
+  "main": "./extension.js",
+  "scripts": {
+    "vsce-package": "vsce package"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^3.0.0"
+  }
+}
