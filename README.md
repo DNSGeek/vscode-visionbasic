@@ -8,24 +8,24 @@ Syntax highlighting, hover documentation, snippets and tools for **Vision BASIC*
 
 Full TextMate grammar covering every command category:
 
-| Category | Examples |
-|---|---|
-| Editing keywords | `LIST`, `RUN`, `COMP`, `RENUM`, `ASSEM`, `BASIC` |
-| Disk commands | `LOAD`, `SAVE`, `DIR`, `DISK`, `VERIFY` |
-| Math functions | `ABS`, `INT`, `RND`, `RANDOM`, `FRAC` |
-| Speedy math | `INC`, `DEC`, `ADD`, `SUBTRACT`, `HALF`, `DOUBLE` |
-| Bitmap commands | `PLOT`, `LINE`, `HLINE`, `VLINE`, `BITMAP` |
-| Sprite/MOB commands | `MOB`, `MOBXY`, `SHAPE`, `COLLISION`, `DETECT` |
-| Interrupt commands | `INTERRUPT`, `STARTINT`, `HALTINT`, `RASTER` |
-| SID sound commands | `VOICE`, `FREQ`, `ADSR`, `WAVE`, `SIDCLR` |
-| Text video commands | `COLORS`, `CHARSET`, `PANX`, `PANY`, `VIDLOC` |
-| Assembler blocks | `[LDA #1: STA $D020]` highlighted with 6502 mnemonics |
-| ML comments | `;` inside assembler blocks |
-| BASIC comments | `REM` lines |
-| Strings | `"quoted strings"` |
-| String variables | `NAME$`, `SCORE$` |
-| Hex numbers | `$D020`, `$FF00` |
-| Line numbers | Leading digits on each line |
+| Category            | Examples                                              |
+| ------------------- | ----------------------------------------------------- |
+| Editing keywords    | `LIST`, `RUN`, `COMP`, `RENUM`, `ASSEM`, `BASIC`      |
+| Disk commands       | `LOAD`, `SAVE`, `DIR`, `DISK`, `VERIFY`               |
+| Math functions      | `ABS`, `INT`, `RND`, `RANDOM`, `FRAC`                 |
+| Speedy math         | `INC`, `DEC`, `ADD`, `SUBTRACT`, `HALF`, `DOUBLE`     |
+| Bitmap commands     | `PLOT`, `LINE`, `HLINE`, `VLINE`, `BITMAP`            |
+| Sprite/MOB commands | `MOB`, `MOBXY`, `SHAPE`, `COLLISION`, `DETECT`        |
+| Interrupt commands  | `INTERRUPT`, `STARTINT`, `HALTINT`, `RASTER`          |
+| SID sound commands  | `VOICE`, `FREQ`, `ADSR`, `WAVE`, `SIDCLR`             |
+| Text video commands | `COLORS`, `CHARSET`, `PANX`, `PANY`, `VIDLOC`         |
+| Assembler blocks    | `[LDA #1: STA $D020]` highlighted with 6502 mnemonics |
+| ML comments         | `;` inside assembler blocks                           |
+| BASIC comments      | `REM` lines                                           |
+| Strings             | `"quoted strings"`                                    |
+| String variables    | `NAME$`, `SCORE$`                                     |
+| Hex numbers         | `$D020`, `$FF00`                                      |
+| Line numbers        | Leading digits on each line                           |
 
 ### Hover Documentation
 
@@ -40,20 +40,20 @@ Hover over **any Vision BASIC keyword** to see its full signature and descriptio
 
 Type a prefix and hit Tab for common patterns:
 
-| Prefix | Snippet |
-|---|---|
-| `for` | FOR-TO-NEXT loop |
-| `if` | IF-THEN-ELSE block |
-| `sub` | GOSUB subroutine skeleton |
-| `proc` | PROC subroutine with parameter |
-| `interrupt` | Raster interrupt skeleton |
-| `mob` | Sprite/MOB setup |
-| `sound` | SID voice setup |
-| `bitmap` | Bitmap mode enable |
-| `data` | DATA block with READ loop |
-| `asm` | Inline assembler block |
-| `poke` | POKE screen colors |
-| `joy` | Joystick read with direction checks |
+| Prefix      | Snippet                             |
+| ----------- | ----------------------------------- |
+| `for`       | FOR-TO-NEXT loop                    |
+| `if`        | IF-THEN-ELSE block                  |
+| `sub`       | GOSUB subroutine skeleton           |
+| `proc`      | PROC subroutine with parameter      |
+| `interrupt` | Raster interrupt skeleton           |
+| `mob`       | Sprite/MOB setup                    |
+| `sound`     | SID voice setup                     |
+| `bitmap`    | Bitmap mode enable                  |
+| `data`      | DATA block with READ loop           |
+| `asm`       | Inline assembler block              |
+| `poke`      | POKE screen colors                  |
+| `joy`       | Joystick read with direction checks |
 
 ### BASIC/ML Mode Indicator
 

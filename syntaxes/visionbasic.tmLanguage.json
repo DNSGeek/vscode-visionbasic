@@ -26,7 +26,6 @@
     { "include": "#pi_constant" }
   ],
   "repository": {
-
     "line_number": {
       "name": "constant.numeric.line-number.visionbasic",
       "match": "^\\s*\\d+"

@@ -76,10 +76,7 @@
 
   "Bitmap mode": {
     "prefix": "bitmap",
-    "body": [
-      "${1:10} BITMAP 1, 0, 0, 0, 0, 0, 0, 0, 0, 1",
-      "${2:20} BMPCLR"
-    ],
+    "body": ["${1:10} BITMAP 1, 0, 0, 0, 0, 0, 0, 0, 0, 1", "${2:20} BMPCLR"],
     "description": "Enable bitmap mode and clear"
   },
 
@@ -97,9 +94,7 @@
 
   "Assembler block": {
     "prefix": "asm",
-    "body": [
-      "${1:10} [${2:LDA #0}: ${3:STA \\$D020}]; ${4:comment}"
-    ],
+    "body": ["${1:10} [${2:LDA #0}: ${3:STA \\$D020}]; ${4:comment}"],
     "description": "Inline assembler block"
   },
 
