@@ -54,6 +54,10 @@
     "vsce-package": "vsce package"
   },
   "devDependencies": {
-    "@vscode/vsce": "^3.0.0"
+    "@vscode/vsce": "^3.9.2"
+  },
+  "allowScripts": {
+    "@vscode/vsce-sign@2.0.9": true,
+    "keytar@7.9.0": true
   }
 }
