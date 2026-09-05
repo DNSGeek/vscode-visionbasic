@@ -1,25 +1,28 @@
 {
   "name": "visionbasic",
   "displayName": "Vision BASIC",
-  "description": "Syntax highlighting, snippets and hover documentation for Vision BASIC (C64 enhanced BASIC)",
-  "version": "0.1.0",
+  "description": "Syntax highlighting, hover documentation, completion, outline and snippets for Vision BASIC — the compiled BASIC for the Commodore 64",
+  "version": "0.2.0",
   "publisher": "DNSGeek",
+  "license": "GPL-2.0-or-later",
   "engines": {
     "vscode": "^1.75.0"
   },
   "categories": [
-    "Programming Languages"
+    "Programming Languages",
+    "Snippets"
   ],
   "keywords": [
     "C64",
     "Commodore 64",
     "BASIC",
     "Vision BASIC",
+    "6502",
     "retro"
   ],
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/DNSGeek/vscode-visionbasic.git"
   },
   "contributes": {
     "languages": [
@@ -30,7 +33,9 @@
           "visionbasic"
         ],
         "extensions": [
-          ".bas"
+          ".bas",
+          ".vb64",
+          ".vbas"
         ],
         "configuration": "./language-configuration/language-configuration.json"
       }
@@ -47,9 +52,64 @@
         "language": "visionbasic",
         "path": "./snippets/visionbasic.json"
       }
-    ]
+    ],
+    "commands": [
+      {
+        "command": "visionbasic.toggleCommentMode",
+        "title": "Toggle BASIC / ML comment mode",
+        "category": "Vision BASIC"
+      },
+      {
+        "command": "visionbasic.renumber",
+        "title": "Renumber lines (and update GOTO/GOSUB targets)",
+        "category": "Vision BASIC"
+      },
+      {
+        "command": "visionbasic.numberSelection",
+        "title": "Add line numbers to selection",
+        "category": "Vision BASIC"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "visionbasic.toggleCommentMode",
+          "when": "editorLangId == visionbasic"
+        },
+        {
+          "command": "visionbasic.renumber",
+          "when": "editorLangId == visionbasic"
+        },
+        {
+          "command": "visionbasic.numberSelection",
+          "when": "editorLangId == visionbasic"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Vision BASIC",
+      "properties": {
+        "visionbasic.diagnostics.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Warn about BASIC V2 keywords Vision BASIC does not implement, and about variable names longer than 8 characters."
+        }
+      }
+    }
   },
   "main": "./extension.js",
+  "activationEvents": [
+    "onLanguage:visionbasic"
+  ],
+  "files": [
+    "extension.js",
+    "data/",
+    "syntaxes/",
+    "snippets/",
+    "language-configuration/",
+    "README.md",
+    "LICENSE.md"
+  ],
   "scripts": {
     "vsce-package": "vsce package"
   },

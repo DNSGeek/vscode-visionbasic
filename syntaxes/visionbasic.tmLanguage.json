@@ -1,165 +1,367 @@
 {
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "information_for_contributors": [
+    "Generated from the C64 IDE VisionBASIC 1.1 plugin definition.",
+    "Do not edit by hand \u2014 regenerate instead."
+  ],
   "name": "Vision BASIC",
   "scopeName": "source.visionbasic",
-  "fileTypes": ["bas"],
+  "fileTypes": ["bas", "vb64", "vbas"],
   "patterns": [
-    { "include": "#line_number" },
-    { "include": "#rem_comment" },
-    { "include": "#asm_block" },
-    { "include": "#string" },
-    { "include": "#hex_number" },
-    { "include": "#editing_keywords" },
-    { "include": "#disk_keywords" },
-    { "include": "#variable_keywords" },
-    { "include": "#speedy_math" },
-    { "include": "#math_functions" },
-    { "include": "#bitmap_keywords" },
-    { "include": "#sprite_keywords" },
-    { "include": "#interrupt_keywords" },
-    { "include": "#sound_keywords" },
-    { "include": "#video_keywords" },
-    { "include": "#flow_keywords" },
-    { "include": "#basic_keywords" },
-    { "include": "#string_variable" },
-    { "include": "#operators" },
-    { "include": "#number" },
-    { "include": "#pi_constant" }
+    {
+      "include": "#line_number"
+    },
+    {
+      "include": "#rem_comment"
+    },
+    {
+      "include": "#asm_comment"
+    },
+    {
+      "include": "#asm_block"
+    },
+    {
+      "include": "#string"
+    },
+    {
+      "include": "#hex_number"
+    },
+    {
+      "include": "#binary_number"
+    },
+    {
+      "include": "#multiword_keywords"
+    },
+    {
+      "include": "#label_definition"
+    },
+    {
+      "include": "#tag_definition"
+    },
+    {
+      "include": "#line_reference"
+    },
+    {
+      "include": "#unimplemented"
+    },
+    {
+      "include": "#assembler_keywords"
+    },
+    {
+      "include": "#editor_keywords"
+    },
+    {
+      "include": "#conditional_keywords"
+    },
+    {
+      "include": "#loop_keywords"
+    },
+    {
+      "include": "#flow_keywords"
+    },
+    {
+      "include": "#variable_keywords"
+    },
+    {
+      "include": "#operator_keywords"
+    },
+    {
+      "include": "#math_keywords"
+    },
+    {
+      "include": "#string_keywords"
+    },
+    {
+      "include": "#graphics_keywords"
+    },
+    {
+      "include": "#sound_keywords"
+    },
+    {
+      "include": "#screen_keywords"
+    },
+    {
+      "include": "#memory_keywords"
+    },
+    {
+      "include": "#io_keywords"
+    },
+    {
+      "include": "#system_keywords"
+    },
+    {
+      "include": "#proc_call"
+    },
+    {
+      "include": "#string_variable"
+    },
+    {
+      "include": "#pi_constant"
+    },
+    {
+      "include": "#number"
+    },
+    {
+      "include": "#operators"
+    },
+    {
+      "include": "#statement_separator"
+    },
+    {
+      "include": "#variable"
+    }
   ],
   "repository": {
     "line_number": {
       "name": "constant.numeric.line-number.visionbasic",
-      "match": "^\\s*\\d+"
+      "match": "^\\s*\\d+(?=\\s|$)"
     },
-
     "rem_comment": {
       "name": "comment.line.rem.visionbasic",
-      "match": "(?i)\\bREM\\b.*$"
-    },
-
-    "asm_block": {
-      "name": "meta.embedded.assembly.visionbasic",
-      "begin": "\\[",
-      "end": "\\]",
+      "begin": "(?i)\\bREM\\b",
+      "end": "$",
       "beginCaptures": {
-        "0": { "name": "punctuation.definition.asm.begin.visionbasic" }
-      },
-      "endCaptures": {
-        "0": { "name": "punctuation.definition.asm.end.visionbasic" }
+        "0": {
+          "name": "keyword.control.rem.visionbasic"
+        }
       },
       "patterns": [
-        { "include": "#asm_comment" },
-        { "include": "#asm_mnemonic" },
-        { "include": "#hex_number" },
-        { "include": "#number" },
-        { "include": "#asm_register" }
+        {
+          "include": "#todo"
+        }
       ]
     },
-
+    "todo": {
+      "name": "keyword.other.todo.visionbasic",
+      "match": "(?i)\\b(TODO|FIXME|NOTE|XXX|HACK)\\b"
+    },
+    "asm_block": {
+      "name": "meta.embedded.block.assembly.visionbasic",
+      "begin": "\\[",
+      "end": "\\]|$",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.section.assembly.begin.visionbasic"
+        }
+      },
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.section.assembly.end.visionbasic"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#asm_comment"
+        },
+        {
+          "include": "#asm_mnemonic"
+        },
+        {
+          "include": "#asm_immediate"
+        },
+        {
+          "include": "#hex_number"
+        },
+        {
+          "include": "#binary_number"
+        },
+        {
+          "include": "#number"
+        },
+        {
+          "include": "#asm_register"
+        },
+        {
+          "include": "#string"
+        }
+      ]
+    },
     "asm_comment": {
       "name": "comment.line.semicolon.visionbasic",
       "match": ";.*$"
     },
-
     "asm_mnemonic": {
-      "name": "support.function.mnemonic.visionbasic",
-      "match": "(?i)\\b(ADC|AND|ASL|BCC|BCS|BEQ|BIT|BMI|BNE|BPL|BRK|BVC|BVS|CLC|CLD|CLI|CLV|CMP|CPX|CPY|DEC|DEX|DEY|EOR|INC|INX|INY|JMP|JSR|LDA|LDX|LDY|LSR|NOP|ORA|PHA|PHP|PLA|PLP|ROL|ROR|RTI|RTS|SBC|SEC|SED|SEI|STA|STX|STY|TAX|TAY|TSX|TXA|TXS|TYA)\\b"
+      "name": "keyword.operator.mnemonic.visionbasic",
+      "match": "(?i)\\b(?:ADC|AND|ASL|BCC|BCS|BEQ|BIT|BMI|BNE|BPL|BRK|BVC|BVS|CLC|CLD|CLI|CLV|CMP|CPX|CPY|DEC|DEX|DEY|EOR|INC|INX|INY|JMP|JSR|LDA|LDX|LDY|LSR|NOP|ORA|PHA|PHP|PLA|PLP|ROL|ROR|RTI|RTS|SBC|SEC|SED|SEI|STA|STX|STY|TAX|TAY|TSX|TXA|TXS|TYA)\\b"
     },
-
+    "asm_immediate": {
+      "name": "keyword.operator.immediate.visionbasic",
+      "match": "#"
+    },
     "asm_register": {
-      "name": "variable.other.register.visionbasic",
-      "match": "(?i)\\b[AXY]\\b"
+      "name": "variable.language.register.visionbasic",
+      "match": "(?i)(?<=,)\\s*[AXY]\\b"
     },
-
     "string": {
       "name": "string.quoted.double.visionbasic",
       "begin": "\"",
-      "end": "\"",
-      "patterns": []
+      "end": "\"|$",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.string.begin.visionbasic"
+        }
+      },
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.string.end.visionbasic"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#petscii_escape"
+        }
+      ]
     },
-
+    "petscii_escape": {
+      "name": "constant.character.escape.petscii.visionbasic",
+      "match": "\\{[^}\"]*\\}"
+    },
     "hex_number": {
       "name": "constant.numeric.hex.visionbasic",
       "match": "\\$[0-9A-Fa-f]+"
     },
-
+    "binary_number": {
+      "name": "constant.numeric.binary.visionbasic",
+      "match": "%[01]+"
+    },
     "number": {
       "name": "constant.numeric.decimal.visionbasic",
-      "match": "\\b\\d+(\\.\\d+)?\\b"
+      "match": "\\b\\d+(?:\\.\\d+)?\\b"
     },
-
     "pi_constant": {
       "name": "constant.language.pi.visionbasic",
-      "match": "π"
+      "match": "\u03c0"
     },
-
-    "string_variable": {
-      "name": "variable.other.string.visionbasic",
-      "match": "(?i)\\b[A-Z][A-Z0-9!@#%&?]{0,6}\\$"
+    "label_definition": {
+      "match": "(?i)\\b(DESC)\\s+(\\d+)\\s*,\\s*([A-Za-z][A-Za-z0-9!@#%&?]*)",
+      "captures": {
+        "1": {
+          "name": "keyword.control.editor.visionbasic"
+        },
+        "2": {
+          "name": "constant.numeric.line-number.visionbasic"
+        },
+        "3": {
+          "name": "entity.name.function.visionbasic"
+        }
+      }
     },
-
-    "editing_keywords": {
-      "name": "keyword.control.editing.visionbasic",
-      "match": "(?i)\\b(ASSEM|BANK|BASIC|COMP|DELETE|DESC|ERROR|EXEC|FAST|FIND|LIST|LISTER|LITE|LLIST|NEW|OLD|PLIST|QUIT|RENUM|RUN|SLOW|VLIST)\\b"
+    "tag_definition": {
+      "match": "(?i)\\b(TAG|LABEL|PROC)\\s+([A-Za-z][A-Za-z0-9!@#%&?]*)",
+      "captures": {
+        "1": {
+          "name": "storage.type.visionbasic"
+        },
+        "2": {
+          "name": "entity.name.function.visionbasic"
+        }
+      }
     },
-
-    "disk_keywords": {
-      "name": "keyword.control.disk.visionbasic",
-      "match": "(?i)\\b(DEVICE|DIR|DISK|GSAVE|LOAD|SAVE|VERIFY)\\b"
+    "proc_call": {
+      "match": "(?i)(?<![A-Za-z0-9$#.])([A-Za-z][A-Za-z0-9!@#%&?]*)(\\.)(?=[A-Za-z0-9\"$])",
+      "captures": {
+        "1": {
+          "name": "entity.name.function.call.visionbasic"
+        },
+        "2": {
+          "name": "punctuation.separator.parameter.visionbasic"
+        }
+      }
     },
-
-    "variable_keywords": {
-      "name": "storage.type.visionbasic",
-      "match": "(?i)\\b(CLR|DECIMAL|DIM|GLOBAL|LET|LOCAL|TAG|VARIABLES|LABEL|DEF)\\b"
+    "line_reference": {
+      "match": "(?i)\\b(GOTO|GOSUB|THEN|ELSE)\\s+(\\d+)",
+      "captures": {
+        "1": {
+          "name": "keyword.control.flow.visionbasic"
+        },
+        "2": {
+          "name": "constant.numeric.line-number.reference.visionbasic"
+        }
+      }
     },
-
-    "speedy_math": {
-      "name": "support.function.speedy-math.visionbasic",
-      "match": "(?i)\\b(ADD|COMPARE|DEC|DOUBLE|HALF|INC|SUBTRACT)\\b"
+    "multiword_keywords": {
+      "name": "keyword.control.visionbasic",
+      "match": "(?i)\\b(?:MODULE\\s+END|POINT\\s+TAG)\\b"
     },
-
-    "math_functions": {
-      "name": "support.function.math.visionbasic",
-      "match": "(?i)\\b(ABS|FRAC|INT|RND|RANDOM|SGN|WHOLE)\\b"
+    "unimplemented": {
+      "name": "invalid.deprecated.unimplemented.visionbasic",
+      "match": "(?i)\\b(?:ATN|COS|EXP|FRE|LOG|POS|SIN|SQR|TAN|USR)(?![A-Za-z0-9$#])"
     },
-
-    "bitmap_keywords": {
-      "name": "support.function.bitmap.visionbasic",
-      "match": "(?i)\\b(BITMAP|BMPCLR|BMPCOL|BMPLOC|HLINE|LIMITS|LINE|PLOT|VLINE)\\b"
+    "assembler_keywords": {
+      "name": "keyword.control.assembler.visionbasic",
+      "match": "(?i)\\b(?:ASSEM|BASIC|LABEL|START|SYS)(?![A-Za-z0-9$#])"
     },
-
-    "sprite_keywords": {
-      "name": "support.function.sprite.visionbasic",
-      "match": "(?i)\\b(ALLMOBS|CODE|COLLISION|DETECT|MOB|MOBCLR|MOBCOL|MOBEXP|MOBPAT|MOBSET|MOBXY|SHAPE)\\b"
+    "editor_keywords": {
+      "name": "keyword.control.editor.visionbasic",
+      "match": "(?i)\\b(?:DELETE|LISTER|MODULE|RESUME|ERROR|LLIST|PLIST|RENUM|VLIST|AUTO|COMP|CONT|DESC|EXEC|FIND|HALT|LIST|LITE|PREV|QUIT|NEW|OLD|RUN)(?![A-Za-z0-9$#])"
     },
-
-    "interrupt_keywords": {
-      "name": "support.function.interrupt.visionbasic",
-      "match": "(?i)\\b(HALTINT|INTEND|INTERRUPT|RASTER|STARTINT)\\b"
+    "conditional_keywords": {
+      "name": "keyword.control.conditional.visionbasic",
+      "match": "(?i)\\b(?:ELSE|THEN|IF)(?![A-Za-z0-9$#])"
     },
-
-    "sound_keywords": {
-      "name": "support.function.sound.visionbasic",
-      "match": "(?i)\\b(ADSR|CUTOFF|FILTER|FREQ|PULSE|SIDCLR|VOICE|VOL|WAVE)\\b"
+    "loop_keywords": {
+      "name": "keyword.control.loop.visionbasic",
+      "match": "(?i)\\b(?:NEXT|STEP|FOR|DO|TO)(?![A-Za-z0-9$#])"
     },
-
-    "video_keywords": {
-      "name": "support.function.video.visionbasic",
-      "match": "(?i)\\b(BLANK|CATCH|CHARPAT|CHARSET|COLORS|COPYSET|EXTENDED|LOWERCASE|MULTI|NORMAL|PANX|PANY|UPPERCASE|VIDLOC)\\b"
-    },
-
     "flow_keywords": {
       "name": "keyword.control.flow.visionbasic",
-      "match": "(?i)\\b(DO|ELSE|END|FOR|GOSUB|GOTO|HALT|IF|NEXT|ON|PROC|PASS|RESUME|RETURN|SEND|STEP|STOP|THEN|TO|TRAP)\\b"
+      "match": "(?i)\\b(?:RETURN|GOSUB|POINT|TREND|GOTO|PASS|PROC|SEND|STOP|TRAP|END|ON)(?![A-Za-z0-9$#])"
     },
-
-    "basic_keywords": {
-      "name": "keyword.other.visionbasic",
-      "match": "(?i)\\b(ASC|BUTTON|BYTES|CHR\\$|CLOCK|CLOSE|CLS|CMD|COPY|DATA|DEBUG|DETEXT|DUP\\$|FETCH|FILL|GET|INPUT|JOIN|JOY|KEYPRESS|LEFT\\$|LEN|LOC|LONGPEEK|LONGPOKE|MID\\$|MODULE|OPEN|PADBUT|PADDLE|PAUSE|PEEK|POINT|POKE|POLL|PRINT|READ|RESTORE|REUPEEK|REUPOKE|RIGHT\\$|SPC|SPLIT|STASH|START|STATUS|STR\\$|STRINGS|SWAP|SWITCH|SYS|TAB|VAL|VERSION|WAIT|BYTES|STRINGS)\\b"
+    "variable_keywords": {
+      "name": "storage.type.visionbasic",
+      "match": "(?i)\\b(?:VARIABLES|DECIMAL|INTEGER|GLOBAL|LOCAL|DUBL|CLR|DEF|DIM|LET|SUB|TAG)(?![A-Za-z0-9$#])"
     },
-
+    "operator_keywords": {
+      "name": "keyword.operator.word.visionbasic",
+      "match": "(?i)\\b(?:AND|EOR|NOT|OR)(?![A-Za-z0-9$#])"
+    },
+    "math_keywords": {
+      "name": "support.function.math.visionbasic",
+      "match": "(?i)\\b(?:SUBTRACT|COMPARE|DOUBLE|RANDOM|SPLIT|WHOLE|FRAC|HALF|JOIN|ABS|ADD|DEC|INC|INT|RND|SGN|FN|\u03c0)(?![A-Za-z0-9$#])"
+    },
+    "string_keywords": {
+      "name": "support.function.string.visionbasic",
+      "match": "(?i)\\b(?:RIGHT\\$|LEFT\\$|CHR\\$|DUP\\$|MID\\$|STR\\$|ASC|LEN|VAL)(?![A-Za-z0-9$#])"
+    },
+    "graphics_keywords": {
+      "name": "support.function.graphics.visionbasic",
+      "match": "(?i)\\b(?:COLLISION|ALLMOBS|BITMAP|BMPCLR|BMPCOL|BMPLOC|DETECT|LIMITS|MOBCLR|MOBCOL|MOBEXP|MOBPAT|MOBSET|HLINE|MOBXY|SHAPE|VLINE|LINE|PLOT|MOB)(?![A-Za-z0-9$#])"
+    },
+    "sound_keywords": {
+      "name": "support.function.sound.visionbasic",
+      "match": "(?i)\\b(?:CUTOFF|FILTER|SIDCLR|PULSE|VOICE|ADSR|FREQ|WAVE|VOL)(?![A-Za-z0-9$#])"
+    },
+    "screen_keywords": {
+      "name": "support.function.screen.visionbasic",
+      "match": "(?i)\\b(?:LOWERCASE|UPPERCASE|EXTENDED|CHARPAT|CHARSET|COPYSET|COLORS|NORMAL|VIDLOC|BLANK|CATCH|MULTI|PRINT|PANX|PANY|SPC|TAB|CLS|LOC)(?![A-Za-z0-9$#])"
+    },
+    "memory_keywords": {
+      "name": "support.function.memory.visionbasic",
+      "match": "(?i)\\b(?:LONGPEEK|LONGPOKE|REUPEEK|REUPOKE|STRINGS|DETEXT|SWITCH|BYTES|FETCH|STASH|BANK|CODE|COPY|FILL|PEEK|POKE|SWAP)(?![A-Za-z0-9$#])"
+    },
+    "io_keywords": {
+      "name": "support.function.io.visionbasic",
+      "match": "(?i)\\b(?:KEYPRESS|BUTTON|DEVICE|INPUT\\#|PADBUT|PADDLE|PRINT\\#|STATUS|VERIFY|CLOSE|GSAVE|INPUT|DISK|FILE|GET\\#|LOAD|OPEN|POLL|SAVE|CMD|DIR|GET|JOY)(?![A-Za-z0-9$#])"
+    },
+    "system_keywords": {
+      "name": "support.function.system.visionbasic",
+      "match": "(?i)\\b(?:INTERRUPT|STARTINT|HALTINT|RESTORE|VERSION|INTEND|RASTER|CLOCK|DEBUG|PAUSE|DATA|FAST|READ|SLOW|WAIT|REM)(?![A-Za-z0-9$#])"
+    },
+    "string_variable": {
+      "name": "variable.other.string.visionbasic",
+      "match": "(?i)\\b[A-Za-z][A-Za-z0-9!@#%&?]{0,7}\\$"
+    },
+    "variable": {
+      "name": "variable.other.visionbasic",
+      "match": "(?i)\\b[A-Za-z][A-Za-z0-9!@#%&?]{0,7}\\b"
+    },
     "operators": {
       "name": "keyword.operator.visionbasic",
-      "match": "(?i)\\b(AND|OR|EOR)\\b|[+\\-*/<>=]"
+      "match": "<>|<=|>=|[+\\-*/<>=^]"
+    },
+    "statement_separator": {
+      "name": "punctuation.terminator.statement.visionbasic",
+      "match": ":"
     }
   }
 }

@@ -1,4 +1,15 @@
 {
+  "Program skeleton": {
+    "prefix": "vbprog",
+    "body": [
+      "10 REM ${1:program name}",
+      "20 VERSION 1.1",
+      "30 GLOBAL",
+      "40 ${2:REM main code}",
+      "50 END"
+    ],
+    "description": "Vision BASIC program skeleton with a VERSION guard"
+  },
   "FOR loop": {
     "prefix": "for",
     "body": [
@@ -8,7 +19,20 @@
     ],
     "description": "FOR-TO-NEXT loop (integer variables only)"
   },
-
+  "FOR loop with STEP": {
+    "prefix": "forstep",
+    "body": [
+      "${1:10} FOR ${2:I} = ${3:0} TO ${4:9} STEP ${5:2}",
+      "${6:20}   REM loop body",
+      "${7:30} NEXT ${2:I}"
+    ],
+    "description": "FOR-TO-STEP-NEXT loop (integer variables only)"
+  },
+  "DO loop": {
+    "prefix": "do",
+    "body": ["${1:10} DO ${2:1000}, ${3:10}"],
+    "description": "Run a line a fixed number of times"
+  },
   "IF-THEN-ELSE": {
     "prefix": "if",
     "body": [
@@ -17,7 +41,13 @@
     ],
     "description": "IF-THEN with ELSE"
   },
-
+  "ON GOTO": {
+    "prefix": "on",
+    "body": [
+      "${1:10} ON ${2:A} ${3|GOTO,GOSUB|} ${4:1000}, ${5:2000}, ${6:3000}"
+    ],
+    "description": "Computed branch on a variable"
+  },
   "GOSUB subroutine": {
     "prefix": "sub",
     "body": [
@@ -27,18 +57,33 @@
     ],
     "description": "Subroutine with RETURN"
   },
-
   "PROC subroutine": {
     "prefix": "proc",
     "body": [
-      "${1:100} PROC ${2:myproc}.${3:param1}",
-      "${4:110}   PASS ${3:param1}",
-      "${5:120}   ${6:REM body}",
-      "${7:130} RETURN"
+      "${1:100} PROC ${2:MYPROC}",
+      "${3:110}   PASS ${4:X}, ${5:Y}",
+      "${6:120}   ${7:REM body}",
+      "${8:130}   SEND ${9:RESULT}",
+      "${10:140} RETURN"
     ],
-    "description": "PROC subroutine with parameter"
+    "description": "Named subroutine with PASS parameters and a SEND return value"
   },
-
+  "Named label (DESC)": {
+    "prefix": "desc",
+    "body": ["${1:10} DESC ${2:1000}, ${3:DRAWSCREEN}"],
+    "description": "Attach a name to a line so it can be called like a subroutine"
+  },
+  "TRAP error handler": {
+    "prefix": "trap",
+    "body": [
+      "${1:10} TRAP ${2:9000}, ${3:ERRADDR}",
+      "",
+      "${2:9000} REM --- error handler ---",
+      "${4:9010}   PRINT \"ERROR AT\"; ${3:ERRADDR}",
+      "${5:9020} RESUME"
+    ],
+    "description": "Send control to an error handler"
+  },
   "Raster interrupt": {
     "prefix": "interrupt",
     "body": [
@@ -50,9 +95,8 @@
       "",
       "${8:9000} HALTINT"
     ],
-    "description": "Raster interrupt skeleton"
+    "description": "Raster interrupt skeleton (always HALTINT before exiting)"
   },
-
   "Sprite setup": {
     "prefix": "mob",
     "body": [
@@ -62,42 +106,98 @@
     ],
     "description": "Basic sprite/MOB setup"
   },
-
+  "Sprite move": {
+    "prefix": "mobxy",
+    "body": ["${1:10} MOBXY ${2:X}, ${3:Y}, ${4:0}, ${5:0}"],
+    "description": "Move the current sprite"
+  },
+  "Sprite collision check": {
+    "prefix": "collision",
+    "body": [
+      "${1:10} COLLISION ${2|0,1|}",
+      "${3:20} IF DETECT ${4:0}, ${5:1} THEN ${6:GOSUB 2000}"
+    ],
+    "description": "Latch the collision registers and test specific sprites"
+  },
   "SID sound setup": {
     "prefix": "sound",
     "body": [
-      "${1:10} VOICE ${2:1}",
-      "${3:20} ADSR ${4:0}, ${5:9}, ${6:0}, ${7:0}",
-      "${8:30} FREQ ${9:1000}",
-      "${10:40} WAVE 1, ${11:2}, 0, 0, 0"
+      "${1:10} SIDCLR",
+      "${2:20} VOL ${3:15}",
+      "${4:30} VOICE ${5:1}",
+      "${6:40} ADSR ${7:0}, ${8:9}, ${9:0}, ${10:0}",
+      "${11:50} FREQ ${12:1000}",
+      "${13:60} WAVE 1, ${14:2}, 0, 0, 0"
     ],
-    "description": "Basic SID voice setup (sawtooth)"
+    "description": "SID voice setup — VOICE must come before FREQ/PULSE/ADSR/WAVE"
   },
-
   "Bitmap mode": {
     "prefix": "bitmap",
-    "body": ["${1:10} BITMAP 1, 0, 0, 0, 0, 0, 0, 0, 0, 1", "${2:20} BMPCLR"],
-    "description": "Enable bitmap mode and clear"
+    "body": [
+      "${1:10} BITMAP 1, ${2|0,1|}, 0, 0, 0, 0, 0, 0, 0, 1",
+      "${3:20} BMPCLR 1, 1"
+    ],
+    "description": "Enable bitmap mode and clear the screen"
   },
-
+  "Draw a box": {
+    "prefix": "box",
+    "body": [
+      "${1:10} HLINE ${2:X}, ${3:Y}, ${4:W}, ${5:1}",
+      "${6:20} HLINE ${2:X}, ${3:Y}+${7:H}, ${4:W}, ${5:1}",
+      "${8:30} VLINE ${2:X}, ${3:Y}, ${7:H}, ${5:1}",
+      "${9:40} VLINE ${2:X}+${4:W}, ${3:Y}, ${7:H}, ${5:1}"
+    ],
+    "description": "Draw a rectangle with HLINE/VLINE"
+  },
   "DATA-READ loop": {
     "prefix": "data",
     "body": [
       "${1:10} DATA ${2:1, 2, 3, 4, 5}",
       "${3:20} FOR ${4:I} = 1 TO ${5:5}",
-      "${6:30}   READ ${7:VAL}",
-      "${8:40}   ${9:REM process VAL}",
+      "${6:30}   READ ${7:V}",
+      "${8:40}   ${9:REM process V}",
       "${10:50} NEXT ${4:I}"
     ],
     "description": "DATA block with READ loop"
   },
-
   "Assembler block": {
     "prefix": "asm",
-    "body": ["${1:10} [${2:LDA #0}: ${3:STA \\$D020}]; ${4:comment}"],
-    "description": "Inline assembler block"
+    "body": ["${1:10} [${2:LDA #0}: ${3:STA \\$D020}] ; ${4:comment}"],
+    "description": "Inline assembler statement"
   },
-
+  "Assembler section": {
+    "prefix": "assem",
+    "body": [
+      "${1:10} ASSEM",
+      "${2:20} START *= ${3:49152}",
+      "${4:30} [${5:LDA #0}: ${6:STA \\$D020}: RTS] ; ${7:comment}",
+      "${8:40} BASIC"
+    ],
+    "description": "ASSEM ... BASIC machine language section"
+  },
+  "Module": {
+    "prefix": "module",
+    "body": [
+      "${1:10} MODULE \"${2:SPRITELIB}\", ${3:8}, ${4:49152}",
+      "${5:20}   ${6:REM module code}",
+      "${7:30} MODULE END"
+    ],
+    "description": "Compile a section out to a reusable module file"
+  },
+  "Declare variables": {
+    "prefix": "def",
+    "body": ["${1:10} DEF ${2|INTEGER,DECIMAL,TAG,LABEL|} ${3:X}, ${4:Y}"],
+    "description": "Declare variable types (integer is the default)"
+  },
+  "Local scope": {
+    "prefix": "local",
+    "body": [
+      "${1:10} LOCAL",
+      "${2:20}   ${3:REM locally scoped code}",
+      "${4:30} GLOBAL"
+    ],
+    "description": "LOCAL / GLOBAL variable scope block"
+  },
   "POKE screen color": {
     "prefix": "poke",
     "body": [
@@ -106,7 +206,6 @@
     ],
     "description": "POKE border and background color"
   },
-
   "Joystick read": {
     "prefix": "joy",
     "body": [
@@ -115,8 +214,42 @@
       "${6:30} IF ${2:J} AND 2 THEN ${7:REM down}",
       "${8:40} IF ${2:J} AND 4 THEN ${9:REM left}",
       "${10:50} IF ${2:J} AND 8 THEN ${11:REM right}",
-      "${12:60} IF ${2:J} AND 16 THEN ${13:REM fire}"
+      "${12:60} IF BUTTON ${3:2} THEN ${13:REM fire}"
     ],
-    "description": "Read joystick with direction checks"
+    "description": "Read joystick with direction and button checks"
+  },
+  "Wait for a key": {
+    "prefix": "key",
+    "body": ["${1:10} KEYPRESS ${2:89}, ${3:78}"],
+    "description": "Wait for a keypress; two values act like an IF (false, true)"
+  },
+  "REU stash / fetch": {
+    "prefix": "reu",
+    "body": [
+      "${1:10} IF DETEXT(${2:0}) = 0 THEN ${3:GOTO 9000}",
+      "${4:20} STASH ${5:49152}, ${6:4096}, ${7:0}, ${8:0}",
+      "${9:30} FETCH ${6:4096}, ${5:49152}, ${7:0}, ${8:0}"
+    ],
+    "description": "Copy memory to and from an REU"
+  },
+  "Read a file": {
+    "prefix": "openread",
+    "body": [
+      "${1:10} OPEN ${2:2}, ${3:8}, ${4:2}, \"${5:DATA},S,R\"",
+      "${6:20} INPUT# ${2:2}, ${7:A$}",
+      "${8:30} IF STATUS THEN ${9:GOTO 100}",
+      "${10:40} CLOSE ${2:2}"
+    ],
+    "description": "Open a sequential file, read from it and close it"
+  },
+  "Disk command": {
+    "prefix": "disk",
+    "body": ["${1:10} DISK \"${2:S0:OLDFILE}\", ${3:8}"],
+    "description": "Send a command channel string to a drive"
+  },
+  "Compile and save": {
+    "prefix": "comp",
+    "body": ["COMP \"${1:MYPROG}\", ${2:8}"],
+    "description": "Compile the program in memory and save the result"
   }
 }

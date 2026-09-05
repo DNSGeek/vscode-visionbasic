@@ -1,0 +1,3117 @@
+{
+  "$comment": "Generated from the C64 IDE VisionBASIC 1.1 plugin (token table from VISION BASIC.VEX $AC31, docs from the Vision BASIC Cheat Sheet). Edit the generator, not this file.",
+  "language": "VisionBASIC 1.1",
+  "version": "1.1",
+  "url": "https://www.visionbasic.net",
+  "activationSYS": 2368,
+  "groups": {
+    "assembler": "Assembler mode",
+    "editor": "Editor & compiler",
+    "conditional": "Conditionals",
+    "loop": "Loops",
+    "flow": "Program flow",
+    "variable": "Variables & types",
+    "operator": "Word operators",
+    "math": "Math",
+    "string": "Strings",
+    "graphics": "Bitmap & sprites",
+    "sound": "SID sound",
+    "screen": "Text screen",
+    "memory": "Memory & expansion RAM",
+    "io": "Disk, files & input",
+    "system": "System & interrupts"
+  },
+  "notes": {
+    "math": "Parentheses are NOT allowed in math expressions and there is no operator precedence: expressions evaluate strictly left to right. `4+3*5-2*6` is `(((4+3)*5)-2)*6` = 198.",
+    "variables": "Variable names start with a letter, are significant to 8 characters, and may contain `!@#%&?` and digits. A name may contain a keyword but may not start with one. String variables end in `$`. Variables are integers unless declared `DECIMAL`."
+  },
+  "mlSafe": [
+    "START",
+    "GOTO",
+    "GOSUB",
+    "RETURN",
+    "REM",
+    "TAG",
+    "PROC",
+    "MODULE",
+    "LOCAL",
+    "GLOBAL",
+    "ADD",
+    "SUBTRACT",
+    "COMPARE",
+    "HALF",
+    "DOUBLE",
+    "VARIABLES",
+    "HALT",
+    "RESUME",
+    "VERSION",
+    "DEBUG",
+    "STARTINT",
+    "RASTER",
+    "BYTES",
+    "STRINGS"
+  ],
+  "mnemonics": [
+    "ADC",
+    "AND",
+    "ASL",
+    "BCC",
+    "BCS",
+    "BEQ",
+    "BIT",
+    "BMI",
+    "BNE",
+    "BPL",
+    "BRK",
+    "BVC",
+    "BVS",
+    "CLC",
+    "CLD",
+    "CLI",
+    "CLV",
+    "CMP",
+    "CPX",
+    "CPY",
+    "DEC",
+    "DEX",
+    "DEY",
+    "EOR",
+    "INC",
+    "INX",
+    "INY",
+    "JMP",
+    "JSR",
+    "LDA",
+    "LDX",
+    "LDY",
+    "LSR",
+    "NOP",
+    "ORA",
+    "PHA",
+    "PHP",
+    "PLA",
+    "PLP",
+    "ROL",
+    "ROR",
+    "RTI",
+    "RTS",
+    "SBC",
+    "SEC",
+    "SED",
+    "SEI",
+    "STA",
+    "STX",
+    "STY",
+    "TAX",
+    "TAY",
+    "TSX",
+    "TXA",
+    "TXS",
+    "TYA"
+  ],
+  "keywords": [
+    {
+      "keyword": "ABS",
+      "group": "math",
+      "type": "function",
+      "category": "math",
+      "syntax": "ABS(vov)",
+      "description": "Returns the absolute value of vov.",
+      "example": "A = ABS(B)",
+      "notes": "Parentheses are NOT allowed in mathematical expressions, and order of operations is not followed: expressions are evaluated strictly left to right. 4+3*5-2*6 evaluates as (((4+3)*5)-2)*6 = 198.",
+      "mathWarning": true,
+      "token": 182
+    },
+    {
+      "keyword": "ADD",
+      "group": "math",
+      "type": "command",
+      "category": "math",
+      "syntax": "ADD vop = vov + vov",
+      "description": "Fast addition of two values into an integer variable, tag or pointer.",
+      "example": "ADD A = B + 1",
+      "notes": "Works only with non-arrayed integer variables, tags and pointers.",
+      "mathWarning": true,
+      "mlSafe": true,
+      "token": 212
+    },
+    {
+      "keyword": "ADSR",
+      "group": "sound",
+      "type": "command",
+      "category": "sound",
+      "syntax": "ADSR attack, decay, sustain, release",
+      "description": "Specifies the attack, decay, sustain and release parameters for the current voice.",
+      "example": "ADSR 0,9,0,0",
+      "notes": "Requires a current VOICE to be selected before calling. All parameters can be values or variables; a parameter left off reuses the previous value, or 0 if none was set. 0 disables, 1 enables.",
+      "parameters": [
+        {
+          "name": "attack",
+          "type": "integer",
+          "range": "0-15",
+          "optional": false
+        },
+        {
+          "name": "decay",
+          "type": "integer",
+          "range": "0-15",
+          "optional": false
+        },
+        {
+          "name": "sustain",
+          "type": "integer",
+          "range": "0-15",
+          "optional": false
+        },
+        {
+          "name": "release",
+          "type": "integer",
+          "range": "0-15",
+          "optional": false
+        }
+      ],
+      "token": 240
+    },
+    {
+      "keyword": "ALLMOBS",
+      "group": "graphics",
+      "type": "command",
+      "category": "graphics",
+      "syntax": "ALLMOBS x0, y0, x1, y1, x2, y2, x3, y3, x4, y4, x5, y5, x6, y6, x7, y7",
+      "description": "Sets all eight sprite positions in a single command.",
+      "example": "ALLMOBS 24,50,64,50,104,50,144,50,184,50,224,50,264,50,304,50",
+      "notes": "Commands begin with MOB as a carryover from Simon's BASIC.",
+      "token": 188,
+      "prefix": 252
+    },
+    {
+      "keyword": "AND",
+      "group": "operator",
+      "type": "operator",
+      "category": "math",
+      "syntax": "vov AND vov",
+      "description": "Performs a logical (bitwise) AND.",
+      "example": "A = B AND 15",
+      "token": 175
+    },
+    {
+      "keyword": "ASC",
+      "group": "string",
+      "type": "function",
+      "category": "string",
+      "syntax": "ASC(string)",
+      "description": "Returns the ASCII value of string.",
+      "example": "A = ASC(N$)",
+      "token": 198
+    },
+    {
+      "keyword": "ASSEM",
+      "group": "assembler",
+      "type": "command",
+      "category": "assembly",
+      "syntax": "ASSEM",
+      "description": "Switches into assembler mode. Following lines are assembled as 6502 machine language until BASIC switches back.",
+      "example": "ASSEM",
+      "notes": "In ML mode, mnemonics are enclosed in [] brackets and a semicolon (;) starts a comment, e.g. 100 [LDA1: ORA #1: STA1] ; TURN BASIC ROM ON. Branches and jumps take a line number directly, e.g. JMP1000.",
+      "warning": "In ML mode mnemonics are wrapped in `[]` and `;` starts a comment. Branches and jumps may target a BASIC line number directly, e.g. `JMP1000`.",
+      "token": 135,
+      "prefix": 255
+    },
+    {
+      "keyword": "ATN",
+      "group": "math",
+      "type": "function",
+      "category": "math",
+      "syntax": "ATN(vov)",
+      "description": "Not available in Vision BASIC.",
+      "notes": "The BASIC V2 functions USR, FRE, POS, SQR, LOG, EXP, COS, SIN, TAN and ATN are not implemented by Vision BASIC.",
+      "unimplemented": true,
+      "token": 193
+    },
+    {
+      "keyword": "AUTO",
+      "group": "editor",
+      "type": "command",
+      "category": "editor",
+      "syntax": "AUTO",
+      "description": "Undocumented automatic line numbering.",
+      "notes": "Present in the Vision BASIC token table but not documented in the cheat sheet.",
+      "token": 145,
+      "prefix": 255
+    },
+    {
+      "keyword": "BANK",
+      "group": "memory",
+      "type": "command",
+      "category": "memory",
+      "syntax": "BANK [bank[-bank]][, on/off]",
+      "description": "Displays the current bank number, or changes to the bank specified. With on/off, enables or disables the banks.",
+      "example": "BANK 2",
+      "notes": "In a text video context BANK also selects the active 16K VIC-II memory bank; that is not for setting REU banks, and you will probably never need it.",
+      "parameters": [
+        {
+          "name": "bank",
+          "type": "integer",
+          "description": "Bank, or range of banks, to select or toggle",
+          "optional": true
+        },
+        {
+          "name": "on/off",
+          "type": "integer",
+          "range": "0-1",
+          "description": "1 enables the banks, 0 disables them",
+          "optional": true
+        }
+      ],
+      "token": 128,
+      "prefix": 252
+    },
+    {
+      "keyword": "BASIC",
+      "group": "assembler",
+      "type": "command",
+      "category": "assembly",
+      "syntax": "BASIC",
+      "description": "Switches out of assembler mode and back into BASIC.",
+      "example": "BASIC",
+      "token": 136,
+      "prefix": 255
+    },
+    {
+      "keyword": "BITMAP",
+      "group": "graphics",
+      "type": "command",
+      "category": "graphics",
+      "syntax": "BITMAP [bmp, multicolor, map, drawto, screen, color1, color2, color3, clearcol, clearmap]",
+      "description": "Turns bitmap mode and multicolor mode on (1) or off (0), and sets the visible map, draw-to screen and colors.",
+      "example": "BITMAP 1,0,0,0,1,0,1,2,1,1",
+      "notes": "All parameters can be values or variables. If a parameter is left off, a default or previous value is used.",
+      "parameters": [
+        {
+          "name": "bmp",
+          "type": "integer",
+          "range": "0-1",
+          "description": "Turns bitmap mode on or off",
+          "optional": true
+        },
+        {
+          "name": "multicolor",
+          "type": "integer",
+          "range": "0-1",
+          "description": "Turns multicolor mode on or off",
+          "optional": true
+        },
+        {
+          "name": "map",
+          "type": "integer",
+          "range": "0-7",
+          "description": "Which bitmap screen is visible",
+          "optional": true
+        },
+        {
+          "name": "drawto",
+          "type": "integer",
+          "range": "0-7",
+          "description": "Which screen the drawing commands draw to",
+          "optional": true
+        },
+        {
+          "name": "screen",
+          "type": "integer",
+          "description": "Screen used for the bitmap colors",
+          "optional": true
+        },
+        {
+          "name": "color1",
+          "type": "integer",
+          "range": "0-15",
+          "optional": true
+        },
+        {
+          "name": "color2",
+          "type": "integer",
+          "range": "0-15",
+          "optional": true
+        },
+        {
+          "name": "color3",
+          "type": "integer",
+          "range": "0-15",
+          "optional": true
+        },
+        {
+          "name": "clearcol",
+          "type": "integer",
+          "range": "0-1",
+          "description": "1 clears the color screen",
+          "optional": true
+        },
+        {
+          "name": "clearmap",
+          "type": "integer",
+          "range": "0-1",
+          "description": "1 clears the bitmap",
+          "optional": true
+        }
+      ],
+      "token": 157,
+      "prefix": 252
+    },
+    {
+      "keyword": "BLANK",
+      "group": "screen",
+      "type": "command",
+      "category": "screen",
+      "syntax": "BLANK [blank[, bg, bars1, bars2]]",
+      "description": "Blanks or restores the screen.",
+      "example": "BLANK 1,0,1,2",
+      "parameters": [
+        {
+          "name": "blank",
+          "type": "integer",
+          "range": "0-1",
+          "description": "1 blanks the screen, 0 un-blanks it",
+          "optional": true
+        },
+        {
+          "name": "bg",
+          "type": "integer",
+          "range": "0-15",
+          "description": "Background color",
+          "optional": true
+        },
+        {
+          "name": "bars1",
+          "type": "integer",
+          "range": "0-15",
+          "description": "First bar color",
+          "optional": true
+        },
+        {
+          "name": "bars2",
+          "type": "integer",
+          "range": "0-15",
+          "description": "Second bar color",
+          "optional": true
+        }
+      ],
+      "token": 134,
+      "prefix": 252
+    },
+    {
+      "keyword": "BMP",
+      "group": "graphics",
+      "type": "command",
+      "category": "graphics",
+      "syntax": "BMP",
+      "description": "Bitmap token. Combines with CLR and LOC to form BMPCLR and BMPLOC.",
+      "notes": "BMPCLR and BMPLOC are encoded as the token pair BMP+CLR and BMP+LOC. Present in the Vision BASIC token table but not documented in the cheat sheet.",
+      "fragment": true,
+      "token": 158,
+      "prefix": 252
+    },
+    {
+      "keyword": "BMPCLR",
+      "group": "graphics",
+      "type": "command",
+      "category": "graphics",
+      "syntax": "BMPCLR [clearmap[, clearcol]]",
+      "description": "Clears the currently visible bitmap screen if clearmap is 1, and the color screen if clearcol is 1. If neither argument is specified, clears both.",
+      "example": "BMPCLR 1,1",
+      "notes": "All parameters can be values or variables. If a parameter is left off, a default or previous value is used.",
+      "tokens": ["BMP", "CLR"],
+      "composite": true
+    },
+    {
+      "keyword": "BMPCOL",
+      "group": "graphics",
+      "type": "command",
+      "category": "graphics",
+      "syntax": "BMPCOL screen, color1, color2, color3, clearcol[, clearmap]",
+      "description": "Sets the bitmap colors that will be used and defines which screen to use. If clearmap is 1, clears the bitmap.",
+      "example": "BMPCOL 1,0,1,2,1,1",
+      "notes": "All parameters can be values or variables. If a parameter is left off, a default or previous value is used.",
+      "token": 159,
+      "prefix": 252
+    },
+    {
+      "keyword": "BMPLOC",
+      "group": "graphics",
+      "type": "command",
+      "category": "graphics",
+      "syntax": "BMPLOC map, drawto",
+      "description": "Sets which bitmap screen is visible and which screen the drawing commands draw to.",
+      "example": "BMPLOC 0,1",
+      "notes": "All parameters can be values or variables. If a parameter is left off, a default or previous value is used.",
+      "parameters": [
+        {
+          "name": "map",
+          "type": "integer",
+          "range": "0-7",
+          "description": "Bitmap screen to make visible",
+          "optional": false
+        },
+        {
+          "name": "drawto",
+          "type": "integer",
+          "range": "0-7",
+          "description": "Bitmap screen the drawing commands affect",
+          "optional": false
+        }
+      ],
+      "tokens": ["BMP", "LOC"],
+      "composite": true
+    },
+    {
+      "keyword": "BUTTON",
+      "group": "io",
+      "type": "function",
+      "category": "io",
+      "syntax": "BUTTON joynum[, button#]",
+      "description": "Returns 1 if the joystick button is pressed, 0 if not.",
+      "example": "IF BUTTON 2 THEN GOSUB 1000",
+      "parameters": [
+        {
+          "name": "joynum",
+          "type": "integer",
+          "range": "1-2",
+          "description": "Joystick port to read",
+          "optional": false
+        },
+        {
+          "name": "button#",
+          "type": "integer",
+          "range": "1-3",
+          "description": "Which button to read; defaults to 1",
+          "optional": true
+        }
+      ],
+      "token": 227
+    },
+    {
+      "keyword": "BYTES",
+      "group": "memory",
+      "type": "command",
+      "category": "memory",
+      "syntax": "BYTES count[, byte[, tag[, alignment]]]",
+      "description": "When compiling, inserts count bytes of value byte, with a label of tag, aligned to alignment.",
+      "example": "BYTES 256, 0, BUFFER, 256",
+      "parameters": [
+        {
+          "name": "count",
+          "type": "integer",
+          "description": "How many bytes to insert",
+          "optional": false
+        },
+        {
+          "name": "byte",
+          "type": "integer",
+          "range": "0-255",
+          "description": "Fill value; 0 if not specified",
+          "optional": true
+        },
+        {
+          "name": "tag",
+          "type": "string",
+          "description": "Label for the block",
+          "optional": true
+        },
+        {
+          "name": "alignment",
+          "type": "integer",
+          "description": "Byte alignment of the block",
+          "optional": true
+        }
+      ],
+      "mlSafe": true,
+      "token": 181,
+      "prefix": 252
+    },
+    {
+      "keyword": "CATCH",
+      "group": "screen",
+      "type": "command",
+      "category": "screen",
+      "syntax": "CATCH rasterline",
+      "description": "Acts like a WAIT command for the raster line.",
+      "example": "CATCH 250",
+      "parameters": [
+        {
+          "name": "rasterline",
+          "type": "integer",
+          "range": "0-255",
+          "description": "Raster line to wait for",
+          "optional": false
+        }
+      ],
+      "token": 162,
+      "prefix": 252
+    },
+    {
+      "keyword": "CHARPAT",
+      "group": "screen",
+      "type": "command",
+      "category": "screen",
+      "syntax": "CHARPAT character, charset",
+      "description": "Moves the \"code\" pointer to point at a specific character image.",
+      "example": "CHARPAT 65, 2",
+      "parameters": [
+        {
+          "name": "character",
+          "type": "integer",
+          "range": "0-255",
+          "description": "The character to point at",
+          "optional": false
+        },
+        {
+          "name": "charset",
+          "type": "integer",
+          "description": "The character set the character is in",
+          "optional": false
+        }
+      ],
+      "token": 155,
+      "prefix": 252
+    },
+    {
+      "keyword": "CHARSET",
+      "group": "screen",
+      "type": "command",
+      "category": "screen",
+      "syntax": "CHARSET charset",
+      "description": "Selects the desired character set.",
+      "example": "CHARSET 2",
+      "token": 144,
+      "prefix": 252
+    },
+    {
+      "keyword": "CHR$",
+      "group": "string",
+      "type": "function",
+      "category": "string",
+      "syntax": "CHR$(vov[, count])",
+      "description": "Appends ASCII character vov to a string, 1 or count times.",
+      "example": "A$ = CHR$(147)",
+      "token": 199
+    },
+    {
+      "keyword": "CLOCK",
+      "group": "system",
+      "type": "command",
+      "category": "system",
+      "syntax": "CLOCK [jiffies]",
+      "description": "Sets the CLOCK to jiffies if specified, or to 0 if not.",
+      "example": "CLOCK 0",
+      "token": 205
+    },
+    {
+      "keyword": "CLOSE",
+      "group": "io",
+      "type": "command",
+      "category": "io",
+      "syntax": "CLOSE file#, file#, ...",
+      "description": "Closes one or more files.",
+      "example": "CLOSE 2",
+      "token": 160
+    },
+    {
+      "keyword": "CLR",
+      "group": "variable",
+      "type": "command",
+      "category": "variables",
+      "syntax": "CLR",
+      "description": "Clears the memory used by all variables.",
+      "token": 156
+    },
+    {
+      "keyword": "CLS",
+      "group": "screen",
+      "type": "command",
+      "category": "screen",
+      "syntax": "CLS [pokecode[, color]]",
+      "description": "Clears the current text screen. Uses space if pokecode is not specified. Colors are not changed unless color is specified.",
+      "example": "CLS 32,1",
+      "token": 220
+    },
+    {
+      "keyword": "CMD",
+      "group": "io",
+      "type": "command",
+      "category": "io",
+      "syntax": "CMD file#[, string]",
+      "description": "Redirects all I/O to file file#. Optionally sends string to the file.",
+      "example": "CMD 4",
+      "token": 157
+    },
+    {
+      "keyword": "CODE",
+      "group": "memory",
+      "type": "command",
+      "category": "memory",
+      "syntax": "CODE values ....",
+      "description": "Any code following this command is stored in memory at the location indicated by the \"code\" pointer.",
+      "example": "CODE 255,129,129,255",
+      "notes": "MOBPAT and CHARPAT move the \"code\" pointer to sprite shape data and character image data respectively.",
+      "token": 233
+    },
+    {
+      "keyword": "COLLISION",
+      "group": "graphics",
+      "type": "command",
+      "category": "graphics",
+      "syntax": "COLLISION selection",
+      "description": "Copies the collision registers and zeros the copied register.",
+      "example": "COLLISION 0",
+      "notes": "Commands begin with MOB as a carryover from Simon's BASIC.",
+      "parameters": [
+        {
+          "name": "selection",
+          "type": "integer",
+          "range": "0-1",
+          "description": "0 copies the sprite-to-sprite register, 1 the sprite-to-foreground register",
+          "optional": false
+        }
+      ],
+      "token": 141,
+      "prefix": 252
+    },
+    {
+      "keyword": "COLORS",
+      "group": "screen",
+      "type": "command",
+      "category": "screen",
+      "syntax": "COLORS text, border, screen, color1, color2, color3",
+      "description": "Sets the color registers.",
+      "example": "COLORS 1,0,0,2,3,4",
+      "parameters": [
+        {
+          "name": "text",
+          "type": "integer",
+          "range": "0-15",
+          "description": "Text color",
+          "optional": false
+        },
+        {
+          "name": "border",
+          "type": "integer",
+          "range": "0-15",
+          "description": "Border color",
+          "optional": false
+        },
+        {
+          "name": "screen",
+          "type": "integer",
+          "range": "0-15",
+          "description": "Background color",
+          "optional": false
+        },
+        {
+          "name": "color1",
+          "type": "integer",
+          "range": "0-15",
+          "description": "Extra background color 1",
+          "optional": false
+        },
+        {
+          "name": "color2",
+          "type": "integer",
+          "range": "0-15",
+          "description": "Extra background color 2",
+          "optional": false
+        },
+        {
+          "name": "color3",
+          "type": "integer",
+          "range": "0-15",
+          "description": "Extra background color 3",
+          "optional": false
+        }
+      ],
+      "token": 232
+    },
+    {
+      "keyword": "COMP",
+      "group": "editor",
+      "type": "command",
+      "category": "editor",
+      "syntax": "COMP [\"filename\"[, devnum]]",
+      "description": "Compiles the program in memory and optionally saves the result to a file.",
+      "example": "COMP \"MYPROG\",8",
+      "parameters": [
+        {
+          "name": "filename",
+          "type": "string",
+          "description": "Output file name, 12 characters or less",
+          "optional": true
+        },
+        {
+          "name": "devnum",
+          "type": "integer",
+          "description": "Device to save to; the default device if omitted",
+          "optional": true
+        }
+      ],
+      "token": 131,
+      "prefix": 255
+    },
+    {
+      "keyword": "COMPARE",
+      "group": "math",
+      "type": "command",
+      "category": "math",
+      "syntax": "COMPARE vov, vov",
+      "description": "Fast comparison of two values. Both parameters must be 2 byte integers.",
+      "example": "COMPARE A, B",
+      "notes": "Works only with non-arrayed integer variables, tags and pointers.",
+      "mathWarning": true,
+      "mlSafe": true,
+      "token": 214
+    },
+    {
+      "keyword": "CONT",
+      "group": "editor",
+      "type": "command",
+      "category": "editor",
+      "syntax": "CONT",
+      "description": "Continues a stopped program.",
+      "notes": "Present in the Vision BASIC token table but not documented in the cheat sheet.",
+      "token": 154
+    },
+    {
+      "keyword": "COPY",
+      "group": "memory",
+      "type": "command",
+      "category": "memory",
+      "syntax": "COPY end, start, new",
+      "description": "Copies the memory from addresses start-end to address new.",
+      "example": "COPY 8191,4096,49152",
+      "token": 150,
+      "prefix": 252
+    },
+    {
+      "keyword": "COPYSET",
+      "group": "screen",
+      "type": "command",
+      "category": "screen",
+      "syntax": "COPYSET charset[, case]",
+      "description": "Copies the C64 character set to location charset.",
+      "example": "COPYSET 2, 0",
+      "parameters": [
+        {
+          "name": "charset",
+          "type": "integer",
+          "description": "Destination of the copied character set",
+          "optional": false
+        },
+        {
+          "name": "case",
+          "type": "integer",
+          "range": "0-1",
+          "description": "0 copies uppercase, 1 copies lowercase",
+          "optional": true
+        }
+      ],
+      "token": 156,
+      "prefix": 252
+    },
+    {
+      "keyword": "COS",
+      "group": "math",
+      "type": "function",
+      "category": "math",
+      "syntax": "COS(vov)",
+      "description": "Not available in Vision BASIC.",
+      "notes": "The BASIC V2 functions USR, FRE, POS, SQR, LOG, EXP, COS, SIN, TAN and ATN are not implemented by Vision BASIC.",
+      "unimplemented": true,
+      "token": 190
+    },
+    {
+      "keyword": "CUTOFF",
+      "group": "sound",
+      "type": "command",
+      "category": "sound",
+      "syntax": "CUTOFF freq",
+      "description": "Sets the cutoff frequency to freq for the SID filtering system.",
+      "example": "CUTOFF 1024",
+      "notes": "All parameters can be values or variables; a parameter left off reuses the previous value, or 0 if none was set. 0 disables, 1 enables.",
+      "token": 139,
+      "prefix": 252
+    },
+    {
+      "keyword": "DATA",
+      "group": "system",
+      "type": "command",
+      "category": "system",
+      "syntax": "DATA val, val, ...",
+      "description": "Holds data to be READ later.",
+      "example": "DATA 1, 2, 3",
+      "token": 131
+    },
+    {
+      "keyword": "DEBUG",
+      "group": "system",
+      "type": "command",
+      "category": "system",
+      "syntax": "DEBUG 0 | 1",
+      "description": "Enables (1) or disables (0) DEBUG mode, which reduces the number of passes for compilation. Results in slower and larger programs.",
+      "example": "DEBUG 1",
+      "mlSafe": true,
+      "token": 180,
+      "prefix": 252
+    },
+    {
+      "keyword": "DEC",
+      "group": "math",
+      "type": "command",
+      "category": "math",
+      "syntax": "DEC vop",
+      "description": "Decrements vop by 1.",
+      "example": "DEC A",
+      "notes": "Works with non-arrayed integer variables, tags and pointers, and also with non-arrayed decimal variables.",
+      "mathWarning": true,
+      "token": 222
+    },
+    {
+      "keyword": "DECIMAL",
+      "group": "variable",
+      "type": "command",
+      "category": "variables",
+      "syntax": "DECIMAL variable[, variable[, variable[, ...]]]",
+      "description": "Creates new decimal variables.",
+      "example": "DECIMAL X, Y, RATE",
+      "notes": "Variables must start with a letter and can be up to 8 characters long; anything past 8 characters is silently ignored. The symbols !, @, #, %, & and ? and numbers are allowed. Variable names can contain keywords but cannot start with one. Strings must be terminated with a dollar ($) sign. All variables are integers by default.",
+      "varNote": true,
+      "token": 215
+    },
+    {
+      "keyword": "DEF",
+      "group": "variable",
+      "type": "command",
+      "category": "variables",
+      "syntax": "DEF type var[, var, var, ...]",
+      "description": "Defines variable types in a structured fashion.",
+      "example": "DEF DECIMAL X, Y",
+      "parameters": [
+        {
+          "name": "type",
+          "type": "keyword",
+          "range": "TAG | LABEL | INT | INTEGER | DECIMAL",
+          "description": "The type to give the listed variables",
+          "optional": false
+        },
+        {
+          "name": "var",
+          "type": "name",
+          "description": "One or more variable names",
+          "optional": false
+        }
+      ],
+      "varNote": true,
+      "token": 150
+    },
+    {
+      "keyword": "DELETE",
+      "group": "editor",
+      "type": "command",
+      "category": "editor",
+      "syntax": "DELETE [start-end]",
+      "description": "Deletes the range of lines from start to end. With no parameters, acts like NEW.",
+      "example": "DELETE 100-200",
+      "token": 138,
+      "prefix": 255
+    },
+    {
+      "keyword": "DESC",
+      "group": "editor",
+      "type": "command",
+      "category": "editor",
+      "syntax": "DESC line#, label",
+      "description": "Creates a subroutine label and starts its code at line#.",
+      "example": "DESC 1000, DRAWSCREEN",
+      "token": 132,
+      "prefix": 255
+    },
+    {
+      "keyword": "DETECT",
+      "group": "graphics",
+      "type": "command",
+      "category": "graphics",
+      "syntax": "DETECT mob#[, mob#[, mob#[, ...]]]",
+      "description": "Used after the COLLISION command. Checks whether the specified sprites were involved in a collision.",
+      "example": "COLLISION 0 : DETECT 0,1",
+      "notes": "Commands begin with MOB as a carryover from Simon's BASIC.",
+      "token": 142,
+      "prefix": 252
+    },
+    {
+      "keyword": "DETEXT",
+      "group": "memory",
+      "type": "function",
+      "category": "memory",
+      "syntax": "DETEXT(type)",
+      "description": "Returns how much extended memory of type is attached to the system.",
+      "example": "A = DETEXT(0)",
+      "token": 168,
+      "prefix": 252
+    },
+    {
+      "keyword": "DEVICE",
+      "group": "io",
+      "type": "command",
+      "category": "io",
+      "syntax": "DEVICE devnum",
+      "description": "Sets the device number for the default device.",
+      "example": "DEVICE 9",
+      "token": 165,
+      "prefix": 252
+    },
+    {
+      "keyword": "DIM",
+      "group": "variable",
+      "type": "command",
+      "category": "variables",
+      "syntax": "DIM [DECIMAL] variable(value)",
+      "description": "Creates array variable of value size. DECIMAL makes it an array of decimals rather than integers.",
+      "example": "DIM SCORES(20)",
+      "varNote": true,
+      "token": 134
+    },
+    {
+      "keyword": "DIR",
+      "group": "io",
+      "type": "command",
+      "category": "io",
+      "syntax": "DIR [num]",
+      "description": "Lists the current device's directory. If num is supplied, the listing is sent to a printer.",
+      "example": "DIR",
+      "token": 134,
+      "prefix": 255
+    },
+    {
+      "keyword": "DISK",
+      "group": "io",
+      "type": "command",
+      "category": "io",
+      "syntax": "DISK [\"command\"[, devnum]]",
+      "description": "Equivalent to OPEN 15,devnum,15,\"command\":CLOSE 15. Uses the default device if not specified, and initializes the device if command is not specified.",
+      "example": "DISK \"S0:OLDFILE\"",
+      "token": 225
+    },
+    {
+      "keyword": "DO",
+      "group": "loop",
+      "type": "loop",
+      "category": "loop",
+      "syntax": "DO line#, times",
+      "description": "Runs line line# times times.",
+      "example": "DO 1000, 10",
+      "notes": "DO loops only work on integer variables.",
+      "token": 177,
+      "prefix": 252
+    },
+    {
+      "keyword": "DOUBLE",
+      "group": "math",
+      "type": "command",
+      "category": "math",
+      "syntax": "DOUBLE vop",
+      "description": "Multiplies vop by 2.",
+      "example": "DOUBLE A",
+      "notes": "Works with non-arrayed integer variables, tags and pointers, and also with non-arrayed decimal variables.",
+      "mathWarning": true,
+      "mlSafe": true,
+      "token": 170,
+      "prefix": 252
+    },
+    {
+      "keyword": "DUBL",
+      "group": "variable",
+      "type": "command",
+      "category": "variables",
+      "syntax": "DUBL",
+      "description": "Double-precision variable type, used with DEF.",
+      "notes": "Present in the Vision BASIC token table but not documented in the cheat sheet.",
+      "varNote": true,
+      "token": 185,
+      "prefix": 252
+    },
+    {
+      "keyword": "DUP$",
+      "group": "string",
+      "type": "function",
+      "category": "string",
+      "syntax": "DUP$(string, count)",
+      "description": "Duplicates string string count times.",
+      "example": "A$ = DUP$(\"-\", 40)",
+      "token": 224
+    },
+    {
+      "keyword": "ELSE",
+      "group": "conditional",
+      "type": "conditional",
+      "category": "flow",
+      "syntax": "ELSE statement",
+      "description": "If the prior IF expression evaluated to FALSE, statement will be executed.",
+      "example": "IF A = 1 THEN PRINT \"ONE\" : ELSE PRINT \"OTHER\"",
+      "mathWarning": true,
+      "token": 218
+    },
+    {
+      "keyword": "END",
+      "group": "flow",
+      "type": "command",
+      "category": "flow",
+      "syntax": "END",
+      "description": "Ends the execution of the program and returns the screen to normal.",
+      "token": 128
+    },
+    {
+      "keyword": "EOR",
+      "group": "operator",
+      "type": "operator",
+      "category": "math",
+      "syntax": "vov EOR vov",
+      "description": "Performs a logical (bitwise) Exclusive OR.",
+      "example": "A = B EOR 255",
+      "token": 223
+    },
+    {
+      "keyword": "ERROR",
+      "group": "editor",
+      "type": "command",
+      "category": "editor",
+      "syntax": "ERROR",
+      "description": "Displays the errors.",
+      "token": 204
+    },
+    {
+      "keyword": "EXEC",
+      "group": "editor",
+      "type": "command",
+      "category": "editor",
+      "syntax": "EXEC command block",
+      "description": "Runs a single line in immediate mode. Shorthand: >",
+      "example": "> PRINT \"HELLO\"",
+      "notes": "The > character is an accepted shorthand for EXEC.",
+      "token": 140,
+      "prefix": 255
+    },
+    {
+      "keyword": "EXP",
+      "group": "math",
+      "type": "function",
+      "category": "math",
+      "syntax": "EXP(vov)",
+      "description": "Not available in Vision BASIC.",
+      "notes": "The BASIC V2 functions USR, FRE, POS, SQR, LOG, EXP, COS, SIN, TAN and ATN are not implemented by Vision BASIC.",
+      "unimplemented": true,
+      "token": 189
+    },
+    {
+      "keyword": "EXTENDED",
+      "group": "screen",
+      "type": "command",
+      "category": "screen",
+      "syntax": "EXTENDED on[, color1, color2, color3]",
+      "description": "Turns extended color mode on or off. If colors are supplied, sets the 3 background colors.",
+      "example": "EXTENDED 1,0,1,2",
+      "token": 147,
+      "prefix": 252
+    },
+    {
+      "keyword": "FAST",
+      "group": "system",
+      "type": "command",
+      "category": "system",
+      "syntax": "FAST",
+      "description": "Enables speed up of some commands.",
+      "token": 210
+    },
+    {
+      "keyword": "FETCH",
+      "group": "memory",
+      "type": "command",
+      "category": "memory",
+      "syntax": "FETCH count, destination, reu[, bank]",
+      "description": "Copies count bytes from an attached REU at address reu and bank bank to C64 address destination.",
+      "example": "FETCH 4096, 49152, 0, 0",
+      "token": 153,
+      "prefix": 252
+    },
+    {
+      "keyword": "FILE",
+      "group": "io",
+      "type": "command",
+      "category": "io",
+      "syntax": "FILE",
+      "description": "Undocumented.",
+      "notes": "Present in the Vision BASIC token table but not documented in the cheat sheet.",
+      "token": 175,
+      "prefix": 252
+    },
+    {
+      "keyword": "FILL",
+      "group": "memory",
+      "type": "command",
+      "category": "memory",
+      "syntax": "FILL start, end[, byte[, step]]",
+      "description": "Fills the memory from address start to address end with value byte, incrementing the address by step.",
+      "example": "FILL 1024,2023,32",
+      "parameters": [
+        {
+          "name": "start",
+          "type": "integer",
+          "description": "First address to fill",
+          "optional": false
+        },
+        {
+          "name": "end",
+          "type": "integer",
+          "description": "Last address to fill",
+          "optional": false
+        },
+        {
+          "name": "byte",
+          "type": "integer",
+          "range": "0-255",
+          "description": "Value to write; 0 if not specified",
+          "optional": true
+        },
+        {
+          "name": "step",
+          "type": "integer",
+          "description": "Address increment; 1 if not specified",
+          "optional": true
+        }
+      ],
+      "token": 149,
+      "prefix": 252
+    },
+    {
+      "keyword": "FILTER",
+      "group": "sound",
+      "type": "command",
+      "category": "sound",
+      "syntax": "FILTER voice1, voice2, voice3, ext, resonance",
+      "description": "Enables or disables the filters of voice1, voice2 and voice3, the output of the external input, and sets the resonance value.",
+      "example": "FILTER 1,0,0,0,8",
+      "notes": "All parameters can be values or variables; a parameter left off reuses the previous value, or 0 if none was set. 0 disables, 1 enables.",
+      "token": 140,
+      "prefix": 252
+    },
+    {
+      "keyword": "FIND",
+      "group": "editor",
+      "type": "command",
+      "category": "editor",
+      "syntax": "FIND text",
+      "description": "Searches the program in the current bank for lines containing text.",
+      "example": "FIND [LDA",
+      "notes": "Do not use quotes when searching for keywords. When searching for assembly, put a left bracket in front of the instruction.",
+      "token": 142,
+      "prefix": 255
+    },
+    {
+      "keyword": "FN",
+      "group": "math",
+      "type": "function",
+      "category": "math",
+      "syntax": "FN name(vov)",
+      "description": "User-defined function reference, as in BASIC V2.",
+      "notes": "Present in the Vision BASIC token table but not documented in the cheat sheet.",
+      "token": 165
+    },
+    {
+      "keyword": "FOR",
+      "group": "loop",
+      "type": "loop",
+      "category": "loop",
+      "syntax": "FOR var = start TO end [STEP val]",
+      "description": "Defines a FOR loop that iterates variable var from start to end, incrementing by 1, or by val if STEP is given.",
+      "example": "FOR I = 1 TO 10 : PRINT I : NEXT I",
+      "notes": "FOR-TO-STEP-NEXT loops only work on integer variables.",
+      "token": 129
+    },
+    {
+      "keyword": "FRAC",
+      "group": "math",
+      "type": "function",
+      "category": "math",
+      "syntax": "FRAC(vov)",
+      "description": "Returns the fractional value of vov, stripped of the sign.",
+      "example": "A = FRAC(B)",
+      "mathWarning": true,
+      "token": 209
+    },
+    {
+      "keyword": "FRE",
+      "group": "math",
+      "type": "function",
+      "category": "math",
+      "syntax": "FRE(vov)",
+      "description": "Not available in Vision BASIC.",
+      "notes": "The BASIC V2 functions USR, FRE, POS, SQR, LOG, EXP, COS, SIN, TAN and ATN are not implemented by Vision BASIC.",
+      "unimplemented": true,
+      "token": 184
+    },
+    {
+      "keyword": "FREQ",
+      "group": "sound",
+      "type": "command",
+      "category": "sound",
+      "syntax": "FREQ freq",
+      "description": "Specifies that the current voice will play frequency freq.",
+      "example": "FREQ 4291",
+      "notes": "Requires a current VOICE to be selected before calling. All parameters can be values or variables; a parameter left off reuses the previous value, or 0 if none was set. 0 disables, 1 enables.",
+      "token": 237
+    },
+    {
+      "keyword": "GET",
+      "group": "io",
+      "type": "command",
+      "category": "io",
+      "syntax": "GET variable",
+      "description": "Reads a character and puts it in variable.",
+      "example": "GET A$",
+      "token": 161
+    },
+    {
+      "keyword": "GET#",
+      "group": "io",
+      "type": "command",
+      "category": "io",
+      "syntax": "GET# file#, variable",
+      "description": "Reads a character from file# and puts it in variable.",
+      "example": "GET# 2, A$"
+    },
+    {
+      "keyword": "GLOBAL",
+      "group": "variable",
+      "type": "command",
+      "category": "variables",
+      "syntax": "GLOBAL",
+      "description": "Restores the global variable scope.",
+      "mlSafe": true,
+      "token": 249
+    },
+    {
+      "keyword": "GOSUB",
+      "group": "flow",
+      "type": "command",
+      "category": "flow",
+      "syntax": "GOSUB line#[, line#[, ...]]",
+      "description": "Runs a subroutine at line#. If more than one line# is specified, runs each one in the order specified.",
+      "example": "GOSUB 1000, 2000",
+      "mlSafe": true,
+      "token": 141
+    },
+    {
+      "keyword": "GOTO",
+      "group": "flow",
+      "type": "command",
+      "category": "flow",
+      "syntax": "GOTO tag | line number",
+      "description": "Jumps to the line number or tag in the program.",
+      "example": "GOTO 1000",
+      "mlSafe": true,
+      "token": 137
+    },
+    {
+      "keyword": "GSAVE",
+      "group": "io",
+      "type": "command",
+      "category": "io",
+      "syntax": "GSAVE on",
+      "description": "Saves a copy of the C64 RAM to GeoRAM expanded memory. If on is 1, enables the back-up feature.",
+      "example": "GSAVE 1",
+      "token": 144,
+      "prefix": 255
+    },
+    {
+      "keyword": "HALF",
+      "group": "math",
+      "type": "command",
+      "category": "math",
+      "syntax": "HALF vop",
+      "description": "Divides vop by 2.",
+      "example": "HALF A",
+      "notes": "Works with non-arrayed integer variables, tags and pointers, and also with non-arrayed decimal variables.",
+      "mathWarning": true,
+      "mlSafe": true,
+      "token": 169,
+      "prefix": 252
+    },
+    {
+      "keyword": "HALT",
+      "group": "editor",
+      "type": "command",
+      "category": "editor",
+      "syntax": "HALT",
+      "description": "Stops compilation at this point. All previous code will be compiled.",
+      "mlSafe": true,
+      "token": 163,
+      "prefix": 252
+    },
+    {
+      "keyword": "HALTINT",
+      "group": "system",
+      "type": "command",
+      "category": "system",
+      "syntax": "HALTINT",
+      "description": "Stops the interrupt totally, returning interrupts to normal.",
+      "notes": "It is critical to halt your interrupts before exiting your program.",
+      "warning": "Critical: always HALTINT before your program exits, or the machine is left running your raster interrupt.",
+      "tokens": ["HALT", "INT"],
+      "composite": true
+    },
+    {
+      "keyword": "HLINE",
+      "group": "graphics",
+      "type": "command",
+      "category": "graphics",
+      "syntax": "HLINE x, y, len, color",
+      "description": "Draws a straight horizontal line starting at (x, y) and continuing to the right for len pixels in color.",
+      "example": "HLINE 0,100,320,1",
+      "notes": "All parameters can be values or variables. If a parameter is left off, a default or previous value is used.",
+      "token": 230
+    },
+    {
+      "keyword": "IF",
+      "group": "conditional",
+      "type": "conditional",
+      "category": "flow",
+      "syntax": "IF expression [AND | OR | EOR expression]",
+      "description": "Evaluates the expression and sets a flag that will be acted upon when the program reaches a THEN statement.",
+      "example": "IF A = 1 THEN PRINT \"ONE\"",
+      "mathWarning": true,
+      "token": 139
+    },
+    {
+      "keyword": "INC",
+      "group": "math",
+      "type": "command",
+      "category": "math",
+      "syntax": "INC vop",
+      "description": "Increments vop by 1.",
+      "example": "INC A",
+      "notes": "Works with non-arrayed integer variables, tags and pointers, and also with non-arrayed decimal variables.",
+      "mathWarning": true,
+      "token": 221
+    },
+    {
+      "keyword": "INPUT",
+      "group": "io",
+      "type": "command",
+      "category": "io",
+      "syntax": "INPUT var, var, ...",
+      "description": "Reads lines and puts the values in var.",
+      "example": "INPUT A$, B",
+      "token": 133
+    },
+    {
+      "keyword": "INPUT#",
+      "group": "io",
+      "type": "command",
+      "category": "io",
+      "syntax": "INPUT# file#, var[, var[, ...]]",
+      "description": "Reads lines from file file# and stores them in var.",
+      "example": "INPUT# 2, A$",
+      "token": 132
+    },
+    {
+      "keyword": "INT",
+      "group": "math",
+      "type": "function",
+      "category": "math",
+      "syntax": "INT(vov)",
+      "description": "Returns the integer value of vov, rounded down.",
+      "example": "A = INT(B)",
+      "mathWarning": true,
+      "token": 181
+    },
+    {
+      "keyword": "INTEGER",
+      "group": "variable",
+      "type": "command",
+      "category": "variables",
+      "syntax": "INTEGER",
+      "description": "Integer variable type, used with DEF.",
+      "example": "DEF INTEGER X, Y",
+      "notes": "Present in the Vision BASIC token table but not documented in the cheat sheet.",
+      "varNote": true,
+      "token": 187,
+      "prefix": 252
+    },
+    {
+      "keyword": "INTEND",
+      "group": "system",
+      "type": "command",
+      "category": "system",
+      "syntax": "INTEND flag",
+      "description": "Should be the last statement in your interrupt routine.",
+      "example": "INTEND 1",
+      "notes": "It is critical to halt your interrupts before exiting your program.",
+      "parameters": [
+        {
+          "name": "flag",
+          "type": "integer",
+          "range": "0-1",
+          "description": "0 JMPs to BASIC's hardware timer routine, 1 will RTI",
+          "optional": false
+        }
+      ],
+      "tokens": ["INT", "END"],
+      "composite": true
+    },
+    {
+      "keyword": "INTERRUPT",
+      "group": "system",
+      "type": "command",
+      "category": "system",
+      "syntax": "INTERRUPT raster, line#",
+      "description": "Creates a new raster interrupt at raster line raster which calls the code at line#.",
+      "example": "INTERRUPT 100, 5000",
+      "notes": "It is critical to halt your interrupts before exiting your program.",
+      "parameters": [
+        {
+          "name": "raster",
+          "type": "integer",
+          "range": "50-249",
+          "description": "Raster line to interrupt on",
+          "optional": false
+        },
+        {
+          "name": "line#",
+          "type": "integer",
+          "description": "Line number of the interrupt routine",
+          "optional": false
+        }
+      ],
+      "warning": "Critical: always HALTINT before your program exits, or the machine is left running your raster interrupt.",
+      "token": 161,
+      "prefix": 252
+    },
+    {
+      "keyword": "JOIN",
+      "group": "math",
+      "type": "command",
+      "category": "math",
+      "syntax": "JOIN vop = low, high",
+      "description": "Joins a low and a high byte into a single variable. The opposite of SPLIT.",
+      "example": "JOIN A = LO, HI",
+      "token": 131,
+      "prefix": 252
+    },
+    {
+      "keyword": "JOY",
+      "group": "io",
+      "type": "function",
+      "category": "io",
+      "syntax": "JOY(joynum)",
+      "description": "Returns the value of the joystick port joynum, typically 1 or 2.",
+      "example": "A = JOY(2)",
+      "token": 226
+    },
+    {
+      "keyword": "KEYPRESS",
+      "group": "io",
+      "type": "command",
+      "category": "io",
+      "syntax": "KEYPRESS [vov[, vov]]",
+      "description": "If vov is not specified, waits for any keypress; otherwise waits for vov to be pressed. If a second vov is specified, acts like an IF block and is FALSE for the first character, TRUE for the second.",
+      "example": "KEYPRESS 89, 78",
+      "token": 171,
+      "prefix": 252
+    },
+    {
+      "keyword": "LABEL",
+      "group": "assembler",
+      "type": "command",
+      "category": "assembly",
+      "syntax": "LABEL label [= vov]",
+      "description": "Identical to TAG. Creates a label that can be used in place of a value or address.",
+      "example": "LABEL SCREEN = 1024",
+      "notes": "Tags and variables can be used in place of values and addresses in ML mode. Commands that are ML-safe: START, GOTO, GOSUB, RETURN, REM, TAG, PROC, MODULE, LOCAL, GLOBAL, ADD, SUBTRACT, COMPARE, HALF, DOUBLE, VARIABLES, HALT, RESUME, VERSION, DEBUG, STARTINT, RASTER, BYTES and STRINGS.",
+      "varNote": true,
+      "token": 186,
+      "prefix": 252
+    },
+    {
+      "keyword": "LEFT$",
+      "group": "string",
+      "type": "function",
+      "category": "string",
+      "syntax": "LEFT$(string, count)",
+      "description": "Returns count characters from the left of string.",
+      "example": "A$ = LEFT$(B$, 5)",
+      "token": 200
+    },
+    {
+      "keyword": "LEN",
+      "group": "string",
+      "type": "function",
+      "category": "string",
+      "syntax": "LEN(string)",
+      "description": "Returns the length of string.",
+      "example": "A = LEN(B$)",
+      "token": 195
+    },
+    {
+      "keyword": "LET",
+      "group": "variable",
+      "type": "command",
+      "category": "variables",
+      "syntax": "LET variable = value",
+      "description": "Assigns a simple value to a simple variable. Useful for speed.",
+      "example": "LET A = 5",
+      "mathWarning": true,
+      "token": 136
+    },
+    {
+      "keyword": "LIMITS",
+      "group": "graphics",
+      "type": "command",
+      "category": "graphics",
+      "syntax": "LIMITS width, height, x-pos, y-pos, colorplot",
+      "description": "Limits the area on the bitmap that the drawing commands will affect.",
+      "example": "LIMITS 160,100,80,50,1",
+      "notes": "All parameters can be values or variables. If a parameter is left off, a default or previous value is used.",
+      "token": 160,
+      "prefix": 252
+    },
+    {
+      "keyword": "LINE",
+      "group": "graphics",
+      "type": "command",
+      "category": "graphics",
+      "syntax": "LINE x1, y1[, x2, y2[, color]]",
+      "description": "Draws a line on the bitmap from (x1, y1) to (x2, y2) in color. If x2 and y2 are not specified, draws from (x1, y1) to the current coordinate.",
+      "example": "LINE 0,0,319,199,1",
+      "notes": "All parameters can be values or variables. If a parameter is left off, a default or previous value is used.",
+      "token": 229
+    },
+    {
+      "keyword": "LIST",
+      "group": "editor",
+      "type": "command",
+      "category": "editor",
+      "syntax": "LIST [line#[-line#]]",
+      "description": "Displays the program in memory. Can optionally display only the lines between the given parameters.",
+      "example": "LIST 100-200",
+      "token": 155
+    },
+    {
+      "keyword": "LISTER",
+      "group": "editor",
+      "type": "command",
+      "category": "editor",
+      "syntax": "LISTER [line#]",
+      "description": "A scrollable LIST. If line# is specified, starts at that line.",
+      "example": "LISTER 500",
+      "token": 133,
+      "prefix": 255
+    },
+    {
+      "keyword": "LITE",
+      "group": "editor",
+      "type": "command",
+      "category": "editor",
+      "syntax": "LITE [0/1]",
+      "description": "With no parameter or a 1, enables LITE mode. 0 disables it.",
+      "example": "LITE 1",
+      "token": 143,
+      "prefix": 255
+    },
+    {
+      "keyword": "LLIST",
+      "group": "editor",
+      "type": "command",
+      "category": "editor",
+      "syntax": "LLIST [line#[-line#[, printer?]]]",
+      "description": "Displays extended details about the program in memory.",
+      "example": "LLIST 100-200,1",
+      "parameters": [
+        {
+          "name": "line#",
+          "type": "integer",
+          "description": "First line, and optionally last line, to describe",
+          "optional": true
+        },
+        {
+          "name": "printer?",
+          "type": "integer",
+          "range": "0-1",
+          "description": "1 sends the output to a printer",
+          "optional": true
+        }
+      ],
+      "token": 141,
+      "prefix": 255
+    },
+    {
+      "keyword": "LOAD",
+      "group": "io",
+      "type": "command",
+      "category": "io",
+      "syntax": "LOAD \"filename\"[, devnum]",
+      "description": "Loads a file from the default device. If filename is not specified, the last specified filename is used.",
+      "example": "LOAD \"MYPROG\",8",
+      "token": 147
+    },
+    {
+      "keyword": "LOC",
+      "group": "screen",
+      "type": "command",
+      "category": "screen",
+      "syntax": "LOC(x, y)",
+      "description": "Moves the cursor to location x, y on the current text screen.",
+      "example": "LOC(10,5) : PRINT \"HELLO\"",
+      "token": 219
+    },
+    {
+      "keyword": "LOCAL",
+      "group": "variable",
+      "type": "command",
+      "category": "variables",
+      "syntax": "LOCAL",
+      "description": "Starts a local scope for variables.",
+      "mlSafe": true,
+      "token": 250
+    },
+    {
+      "keyword": "LOG",
+      "group": "math",
+      "type": "function",
+      "category": "math",
+      "syntax": "LOG(vov)",
+      "description": "Not available in Vision BASIC.",
+      "notes": "The BASIC V2 functions USR, FRE, POS, SQR, LOG, EXP, COS, SIN, TAN and ATN are not implemented by Vision BASIC.",
+      "unimplemented": true,
+      "token": 188
+    },
+    {
+      "keyword": "LONG",
+      "group": "memory",
+      "type": "command",
+      "category": "memory",
+      "syntax": "LONG",
+      "description": "SuperCPU long-address token. Combines with PEEK and POKE to form LONGPEEK and LONGPOKE.",
+      "notes": "LONGPEEK and LONGPOKE are encoded as the token pair LONG+PEEK and LONG+POKE. Present in the Vision BASIC token table but not documented in the cheat sheet.",
+      "fragment": true,
+      "token": 167,
+      "prefix": 252
+    },
+    {
+      "keyword": "LONGPEEK",
+      "group": "memory",
+      "type": "function",
+      "category": "memory",
+      "syntax": "LONGPEEK(address)",
+      "description": "Returns a single value from address on a SuperCPU.",
+      "example": "A = LONGPEEK(16777216)",
+      "tokens": ["LONG", "PEEK"],
+      "composite": true
+    },
+    {
+      "keyword": "LONGPOKE",
+      "group": "memory",
+      "type": "command",
+      "category": "memory",
+      "syntax": "LONGPOKE address, val, val, val, ...",
+      "description": "Pokes into the extended memory of a SuperCPU.",
+      "example": "LONGPOKE 16777216, 1, 2, 3",
+      "tokens": ["LONG", "POKE"],
+      "composite": true
+    },
+    {
+      "keyword": "LOWERCASE",
+      "group": "screen",
+      "type": "command",
+      "category": "screen",
+      "syntax": "LOWERCASE [disable]",
+      "description": "Changes the character set to lowercase. If disable is 1, disables keyboard toggling between upper and lower case.",
+      "example": "LOWERCASE 1",
+      "token": 146,
+      "prefix": 252
+    },
+    {
+      "keyword": "MID$",
+      "group": "string",
+      "type": "function",
+      "category": "string",
+      "syntax": "MID$(string, position, count)",
+      "description": "Returns count characters, starting at index position, from string.",
+      "example": "A$ = MID$(B$, 3, 5)",
+      "token": 202
+    },
+    {
+      "keyword": "MOB",
+      "group": "graphics",
+      "type": "command",
+      "category": "graphics",
+      "syntax": "MOB number, on, multicolor, priority, x, y, x-add, y-add",
+      "description": "Chooses which sprite to make current and initializes it.",
+      "example": "MOB 0,1,0,0,160,100,0,0",
+      "notes": "Commands begin with MOB as a carryover from Simon's BASIC.",
+      "parameters": [
+        {
+          "name": "number",
+          "type": "integer",
+          "range": "0-7",
+          "description": "Which sprite becomes the current sprite",
+          "optional": false
+        },
+        {
+          "name": "on",
+          "type": "integer",
+          "range": "0-1",
+          "description": "Turns the sprite on or off",
+          "optional": false
+        },
+        {
+          "name": "multicolor",
+          "type": "integer",
+          "range": "0-1",
+          "description": "Enables or disables multicolor mode",
+          "optional": false
+        },
+        {
+          "name": "priority",
+          "type": "integer",
+          "range": "0-1",
+          "description": "Enables or disables background priority",
+          "optional": false
+        },
+        {
+          "name": "x",
+          "type": "integer",
+          "description": "Initial X coordinate",
+          "optional": false
+        },
+        {
+          "name": "y",
+          "type": "integer",
+          "description": "Initial Y coordinate",
+          "optional": false
+        },
+        {
+          "name": "x-add",
+          "type": "integer",
+          "description": "X offset",
+          "optional": false
+        },
+        {
+          "name": "y-add",
+          "type": "integer",
+          "description": "Y offset",
+          "optional": false
+        }
+      ],
+      "token": 241
+    },
+    {
+      "keyword": "MOBCLR",
+      "group": "graphics",
+      "type": "command",
+      "category": "graphics",
+      "syntax": "MOBCLR",
+      "description": "Clears all of the sprite registers. Recommended at the beginning of a program that uses sprites, and when you want to clear the screen of sprites.",
+      "notes": "Commands begin with MOB as a carryover from Simon's BASIC.",
+      "tokens": ["MOB", "CLR"],
+      "composite": true
+    },
+    {
+      "keyword": "MOBCOL",
+      "group": "graphics",
+      "type": "command",
+      "category": "graphics",
+      "syntax": "MOBCOL color, shared1, shared2",
+      "description": "Sets the sprite colors.",
+      "example": "MOBCOL 1,2,3",
+      "notes": "Commands begin with MOB as a carryover from Simon's BASIC.",
+      "parameters": [
+        {
+          "name": "color",
+          "type": "integer",
+          "range": "0-15",
+          "description": "Color of the current sprite",
+          "optional": false
+        },
+        {
+          "name": "shared1",
+          "type": "integer",
+          "range": "0-15",
+          "description": "First color shared by all multicolor sprites",
+          "optional": false
+        },
+        {
+          "name": "shared2",
+          "type": "integer",
+          "range": "0-15",
+          "description": "Second color shared by all multicolor sprites",
+          "optional": false
+        }
+      ],
+      "token": 242
+    },
+    {
+      "keyword": "MOBEXP",
+      "group": "graphics",
+      "type": "command",
+      "category": "graphics",
+      "syntax": "MOBEXP x-expan, y-expan",
+      "description": "Enables and disables the X expansion and Y expansion of the current sprite.",
+      "example": "MOBEXP 1,1",
+      "notes": "Commands begin with MOB as a carryover from Simon's BASIC.",
+      "tokens": ["MOB", "EXP"],
+      "composite": true
+    },
+    {
+      "keyword": "MOBPAT",
+      "group": "graphics",
+      "type": "command",
+      "category": "graphics",
+      "syntax": "MOBPAT shape#, bank",
+      "description": "Moves the CODE pointer to point at the specified sprite shape's data. shape# selects the shape, bank specifies the bank where the coded data will be sent.",
+      "example": "MOBPAT 0,1",
+      "notes": "Commands begin with MOB as a carryover from Simon's BASIC.",
+      "token": 243
+    },
+    {
+      "keyword": "MOBSET",
+      "group": "graphics",
+      "type": "command",
+      "category": "graphics",
+      "syntax": "MOBSET shape#, number, number, number, ...",
+      "description": "Initializes a sprite from The Spreditor.",
+      "example": "MOBSET 0,1,2,3",
+      "notes": "Commands begin with MOB as a carryover from Simon's BASIC.",
+      "token": 244
+    },
+    {
+      "keyword": "MOBXY",
+      "group": "graphics",
+      "type": "command",
+      "category": "graphics",
+      "syntax": "MOBXY x, y, x-add, y-add",
+      "description": "Moves the current sprite to the coordinates (x, y). x-add and y-add set the offsets.",
+      "example": "MOBXY 160,100,0,0",
+      "notes": "Commands begin with MOB as a carryover from Simon's BASIC.",
+      "token": 245
+    },
+    {
+      "keyword": "MODULE",
+      "group": "editor",
+      "type": "command",
+      "category": "editor",
+      "syntax": "MODULE filename[, devnum[, address]]  ...  MODULE END",
+      "description": "When compiling, writes this section to a separate module file filename for reusability. MODULE END marks the end of the module.",
+      "example": "MODULE \"SPRITELIB\",8,49152",
+      "parameters": [
+        {
+          "name": "filename",
+          "type": "string",
+          "description": "Module file to write",
+          "optional": false
+        },
+        {
+          "name": "devnum",
+          "type": "integer",
+          "description": "Device to write to; the default device if omitted",
+          "optional": true
+        },
+        {
+          "name": "address",
+          "type": "integer",
+          "description": "Load address; 49152 if not specified",
+          "optional": true
+        }
+      ],
+      "mlSafe": true,
+      "token": 178,
+      "prefix": 252
+    },
+    {
+      "keyword": "MODULE END",
+      "group": "editor",
+      "type": "command",
+      "category": "editor",
+      "syntax": "MODULE END",
+      "description": "End of a module section.",
+      "tokens": ["MODULE", "END"],
+      "composite": true
+    },
+    {
+      "keyword": "MULTI",
+      "group": "screen",
+      "type": "command",
+      "category": "screen",
+      "syntax": "MULTI on[, color1, color2]",
+      "description": "Turns multicolor mode on or off. If colors are specified, sets the background colors.",
+      "example": "MULTI 1,1,2",
+      "token": 148,
+      "prefix": 252
+    },
+    {
+      "keyword": "NEW",
+      "group": "editor",
+      "type": "command",
+      "category": "editor",
+      "syntax": "NEW [bank[-bank]]",
+      "description": "Clears the current program bank, or the banks specified.",
+      "example": "NEW 1-3",
+      "token": 162
+    },
+    {
+      "keyword": "NEXT",
+      "group": "loop",
+      "type": "loop",
+      "category": "loop",
+      "syntax": "NEXT var[, var[, ...]]",
+      "description": "The end of the FOR loop. var must match the FOR loop you are continuing.",
+      "example": "NEXT I",
+      "token": 130
+    },
+    {
+      "keyword": "NORMAL",
+      "group": "screen",
+      "type": "command",
+      "category": "screen",
+      "syntax": "NORMAL clear",
+      "description": "Resets the screen to normal text mode.",
+      "example": "NORMAL 1",
+      "parameters": [
+        {
+          "name": "clear",
+          "type": "integer",
+          "range": "0-1",
+          "description": "1 clears the line link table, 0 does not",
+          "optional": false
+        }
+      ],
+      "token": 135,
+      "prefix": 252
+    },
+    {
+      "keyword": "NOT",
+      "group": "operator",
+      "type": "operator",
+      "category": "math",
+      "syntax": "NOT vov",
+      "description": "Logical NOT.",
+      "notes": "Present in the Vision BASIC token table but not documented in the cheat sheet.",
+      "token": 168
+    },
+    {
+      "keyword": "OLD",
+      "group": "editor",
+      "type": "command",
+      "category": "editor",
+      "syntax": "OLD [bank[-bank]]",
+      "description": "Attempts to restore the program in the current bank, or the banks specified.",
+      "example": "OLD",
+      "token": 128,
+      "prefix": 255
+    },
+    {
+      "keyword": "ON",
+      "group": "flow",
+      "type": "command",
+      "category": "flow",
+      "syntax": "ON var GOSUB | GOTO line#, line#, ...",
+      "description": "Jumps to the line# that matches the value of var.",
+      "example": "ON A GOTO 1000, 2000, 3000",
+      "token": 145
+    },
+    {
+      "keyword": "OPEN",
+      "group": "io",
+      "type": "command",
+      "category": "io",
+      "syntax": "OPEN file#, dev#, secondary, string",
+      "description": "Opens a connection to device dev#, assigning it to file file# with a secondary address of secondary, and sends string through the open file.",
+      "example": "OPEN 2,8,2,\"DATA,S,R\"",
+      "token": 159
+    },
+    {
+      "keyword": "OR",
+      "group": "operator",
+      "type": "operator",
+      "category": "math",
+      "syntax": "vov OR vov",
+      "description": "Performs a logical (bitwise) OR.",
+      "example": "A = B OR 128",
+      "token": 176
+    },
+    {
+      "keyword": "PADBUT",
+      "group": "io",
+      "type": "function",
+      "category": "io",
+      "syntax": "PADBUT joynum",
+      "description": "Returns 1 if the paddle button is pressed, 0 if not.",
+      "example": "IF PADBUT 1 THEN GOSUB 1000",
+      "token": 133,
+      "prefix": 252
+    },
+    {
+      "keyword": "PADDLE",
+      "group": "io",
+      "type": "function",
+      "category": "io",
+      "syntax": "PADDLE joynum",
+      "description": "Returns the value of the paddle, 0-255. Paddles 1-2 are in joynum 1, paddles 3-4 are in 2.",
+      "example": "A = PADDLE 1",
+      "notes": "Returned values are bit-reversed. POKE 2383,0 to disable the PADDLE bit-reversing.",
+      "token": 132,
+      "prefix": 252
+    },
+    {
+      "keyword": "PANX",
+      "group": "screen",
+      "type": "command",
+      "category": "screen",
+      "syntax": "PANX panvalue, columns",
+      "description": "Pans the screen horizontally.",
+      "example": "PANX 0,1",
+      "notes": "POKE 2384,0 to disable the bit-reversing of PANX and PANY.",
+      "parameters": [
+        {
+          "name": "panvalue",
+          "type": "integer",
+          "range": "0-7",
+          "description": "Pan amount, bit-reversed; 0 is none",
+          "optional": false
+        },
+        {
+          "name": "columns",
+          "type": "integer",
+          "range": "0-1",
+          "description": "0 sets a 38 column screen, 1 sets 40 columns",
+          "optional": false
+        }
+      ],
+      "token": 137,
+      "prefix": 252
+    },
+    {
+      "keyword": "PANY",
+      "group": "screen",
+      "type": "command",
+      "category": "screen",
+      "syntax": "PANY panvalue, rows",
+      "description": "Pans the screen vertically.",
+      "example": "PANY 3,1",
+      "notes": "POKE 2384,0 to disable the bit-reversing of PANX and PANY.",
+      "parameters": [
+        {
+          "name": "panvalue",
+          "type": "integer",
+          "range": "0-7",
+          "description": "Pan amount, bit-reversed; 3 is none",
+          "optional": false
+        },
+        {
+          "name": "rows",
+          "type": "integer",
+          "range": "0-1",
+          "description": "0 sets a 24 row screen, 1 sets 25 rows",
+          "optional": false
+        }
+      ],
+      "token": 138,
+      "prefix": 252
+    },
+    {
+      "keyword": "PASS",
+      "group": "flow",
+      "type": "command",
+      "category": "flow",
+      "syntax": "PASS vop[, vop[, vop[, ...]]]",
+      "description": "Defines parameters vop for a subroutine. Must be the first command after PROC if you are passing parameters.",
+      "example": "PASS X, Y",
+      "notes": "Call a subroutine like tag.vop,vop,vop. Strings and string variables cannot be returned from subroutines.",
+      "token": 216
+    },
+    {
+      "keyword": "PAUSE",
+      "group": "system",
+      "type": "command",
+      "category": "system",
+      "syntax": "PAUSE seconds[, jiffies]",
+      "description": "Pauses execution for seconds seconds. If jiffies is specified, pauses for an additional (jiffies/60) seconds.",
+      "example": "PAUSE 1, 30",
+      "token": 172,
+      "prefix": 252
+    },
+    {
+      "keyword": "PEEK",
+      "group": "memory",
+      "type": "function",
+      "category": "memory",
+      "syntax": "PEEK(vov[, index])",
+      "description": "Returns the memory at address vov, optionally offset by index.",
+      "example": "A = PEEK(53280)",
+      "token": 194
+    },
+    {
+      "keyword": "PLIST",
+      "group": "editor",
+      "type": "command",
+      "category": "editor",
+      "syntax": "PLIST [line#[-line#]]",
+      "description": "Sends the program LIST to a printer.",
+      "example": "PLIST 100-200",
+      "token": 129,
+      "prefix": 255
+    },
+    {
+      "keyword": "PLOT",
+      "group": "graphics",
+      "type": "command",
+      "category": "graphics",
+      "syntax": "PLOT x, y, color",
+      "description": "Draws a pixel on the bitmap at coordinates (x, y) in color.",
+      "example": "PLOT 160,100,1",
+      "notes": "All parameters can be values or variables. If a parameter is left off, a default or previous value is used.",
+      "parameters": [
+        {
+          "name": "x",
+          "type": "integer",
+          "range": "0-319",
+          "optional": false
+        },
+        {
+          "name": "y",
+          "type": "integer",
+          "range": "0-199",
+          "optional": false
+        },
+        {
+          "name": "color",
+          "type": "integer",
+          "range": "0-15",
+          "optional": false
+        }
+      ],
+      "token": 228
+    },
+    {
+      "keyword": "POINT",
+      "group": "flow",
+      "type": "command",
+      "category": "flow",
+      "syntax": "POINT vop = line#   |   POINT TAG tag = line#",
+      "description": "Sets vop to the address of the compiled code for line line#. The POINT TAG form creates a tag and points it at that address instead.",
+      "example": "POINT TAG ROUTINE = 1000",
+      "notes": "Call a subroutine like tag.vop,vop,vop. Strings and string variables cannot be returned from subroutines.",
+      "token": 251
+    },
+    {
+      "keyword": "POINT TAG",
+      "group": "system",
+      "type": "command",
+      "category": "system",
+      "syntax": "POINT TAG",
+      "description": "Point a tag at the compiled address of a line.",
+      "tokens": ["POINT", "TAG"],
+      "composite": true
+    },
+    {
+      "keyword": "POKE",
+      "group": "memory",
+      "type": "command",
+      "category": "memory",
+      "syntax": "POKE address, vov, vov, vov, ...",
+      "description": "Puts values vov in consecutive memory starting at address. Can also be used with strings.",
+      "example": "POKE 53280,0,0",
+      "token": 151
+    },
+    {
+      "keyword": "POLL",
+      "group": "io",
+      "type": "command",
+      "category": "io",
+      "syntax": "POLL port#",
+      "description": "Tells the C64 which set of paddles you are polling, allowing substitution of the required delay.",
+      "example": "POLL 1",
+      "parameters": [
+        {
+          "name": "port#",
+          "type": "integer",
+          "range": "1-2",
+          "description": "1 for joystick port 1, 2 for joystick port 2",
+          "optional": false
+        }
+      ],
+      "token": 136,
+      "prefix": 252
+    },
+    {
+      "keyword": "POS",
+      "group": "math",
+      "type": "function",
+      "category": "math",
+      "syntax": "POS(vov)",
+      "description": "Not available in Vision BASIC.",
+      "notes": "The BASIC V2 functions USR, FRE, POS, SQR, LOG, EXP, COS, SIN, TAN and ATN are not implemented by Vision BASIC.",
+      "unimplemented": true,
+      "token": 185
+    },
+    {
+      "keyword": "PREV",
+      "group": "editor",
+      "type": "command",
+      "category": "editor",
+      "syntax": "PREV",
+      "description": "Undocumented.",
+      "notes": "Present in the Vision BASIC token table but not documented in the cheat sheet.",
+      "token": 146,
+      "prefix": 255
+    },
+    {
+      "keyword": "PRINT",
+      "group": "screen",
+      "type": "command",
+      "category": "screen",
+      "syntax": "PRINT expression",
+      "description": "Prints expression to the current text screen.",
+      "example": "PRINT \"HELLO\"",
+      "token": 153
+    },
+    {
+      "keyword": "PRINT#",
+      "group": "io",
+      "type": "command",
+      "category": "io",
+      "syntax": "PRINT# file#, expression",
+      "description": "Prints expression to file file#.",
+      "example": "PRINT# 2, \"HELLO\"",
+      "token": 152
+    },
+    {
+      "keyword": "PROC",
+      "group": "flow",
+      "type": "command",
+      "category": "flow",
+      "syntax": "PROC tag[, vop[, vop[, ...]]]",
+      "description": "Defines the start of a subroutine named tag with parameters vop.",
+      "example": "PROC DRAWBOX, X, Y",
+      "notes": "Call a subroutine like tag.vop,vop,vop. Strings and string variables cannot be returned from subroutines.",
+      "warning": "Strings and string variables cannot be returned from subroutines. Call a named subroutine as `TAG.arg,arg`.",
+      "mlSafe": true,
+      "token": 248
+    },
+    {
+      "keyword": "PULSE",
+      "group": "sound",
+      "type": "command",
+      "category": "sound",
+      "syntax": "PULSE width",
+      "description": "Specifies the pulse waveform width for the current voice.",
+      "example": "PULSE 2048",
+      "notes": "Requires a current VOICE to be selected before calling. All parameters can be values or variables; a parameter left off reuses the previous value, or 0 if none was set. 0 disables, 1 enables.",
+      "token": 238
+    },
+    {
+      "keyword": "QUIT",
+      "group": "editor",
+      "type": "command",
+      "category": "editor",
+      "syntax": "QUIT",
+      "description": "Quits Vision BASIC.",
+      "token": 139,
+      "prefix": 255
+    },
+    {
+      "keyword": "RANDOM",
+      "group": "math",
+      "type": "command",
+      "category": "math",
+      "syntax": "RANDOM [seed]",
+      "description": "Initializes the random number table. With no parameter, uses SID voice 3; otherwise seeds the table with seed.",
+      "example": "RANDOM",
+      "mathWarning": true,
+      "token": 129,
+      "prefix": 252
+    },
+    {
+      "keyword": "RASTER",
+      "group": "system",
+      "type": "command",
+      "category": "system",
+      "syntax": "RASTER raster",
+      "description": "Selects the next raster line to interrupt.",
+      "example": "RASTER 150",
+      "notes": "It is critical to halt your interrupts before exiting your program.",
+      "mlSafe": true,
+      "token": 164,
+      "prefix": 252
+    },
+    {
+      "keyword": "READ",
+      "group": "system",
+      "type": "command",
+      "category": "system",
+      "syntax": "READ vop, vop, ...",
+      "description": "Reads values from a DATA statement.",
+      "example": "READ A, B, C",
+      "token": 135
+    },
+    {
+      "keyword": "REM",
+      "group": "system",
+      "type": "command",
+      "category": "system",
+      "syntax": "REM",
+      "description": "Turns the rest of the line into a comment.",
+      "example": "REM THIS IS A COMMENT",
+      "mlSafe": true,
+      "token": 143
+    },
+    {
+      "keyword": "RENUM",
+      "group": "editor",
+      "type": "command",
+      "category": "editor",
+      "syntax": "RENUM start-end, new[, step]",
+      "description": "Renumbers the lines from start to end so that they begin at new.",
+      "example": "RENUM 100-500, 1000, 10",
+      "parameters": [
+        {
+          "name": "start-end",
+          "type": "integer",
+          "description": "Range of existing lines to renumber",
+          "optional": false
+        },
+        {
+          "name": "new",
+          "type": "integer",
+          "description": "New first line number",
+          "optional": false
+        },
+        {
+          "name": "step",
+          "type": "integer",
+          "description": "Line number increment; 10 if not specified",
+          "optional": true
+        }
+      ],
+      "token": 137,
+      "prefix": 255
+    },
+    {
+      "keyword": "RESTORE",
+      "group": "system",
+      "type": "command",
+      "category": "system",
+      "syntax": "RESTORE [line#]",
+      "description": "Resets the pointer to the start of all DATA statements, or to the DATA statement on line line#.",
+      "example": "RESTORE 1000",
+      "token": 140
+    },
+    {
+      "keyword": "RESUME",
+      "group": "editor",
+      "type": "command",
+      "category": "editor",
+      "syntax": "RESUME",
+      "description": "Resumes compilation after a HALT.",
+      "notes": "Must be at the beginning of a line, or it will be ignored.",
+      "mlSafe": true,
+      "token": 179,
+      "prefix": 252
+    },
+    {
+      "keyword": "RETURN",
+      "group": "flow",
+      "type": "command",
+      "category": "flow",
+      "syntax": "RETURN",
+      "description": "Ends a subroutine and sends program flow back to the GOSUB statement, or to the caller of a PROC.",
+      "notes": "Call a subroutine like tag.vop,vop,vop. Strings and string variables cannot be returned from subroutines.",
+      "mlSafe": true,
+      "token": 142
+    },
+    {
+      "keyword": "REU",
+      "group": "memory",
+      "type": "command",
+      "category": "memory",
+      "syntax": "REU",
+      "description": "REU token. Combines with PEEK and POKE to form REUPEEK and REUPOKE.",
+      "notes": "REUPEEK and REUPOKE are encoded as the token pair REU+PEEK and REU+POKE. Present in the Vision BASIC token table but not documented in the cheat sheet.",
+      "fragment": true,
+      "token": 166,
+      "prefix": 252
+    },
+    {
+      "keyword": "REUPEEK",
+      "group": "memory",
+      "type": "function",
+      "category": "memory",
+      "syntax": "REUPEEK(address, bank)",
+      "description": "Returns the value from an attached REU at address in bank bank.",
+      "example": "A = REUPEEK(0, 0)",
+      "tokens": ["REU", "PEEK"],
+      "composite": true
+    },
+    {
+      "keyword": "REUPOKE",
+      "group": "memory",
+      "type": "command",
+      "category": "memory",
+      "syntax": "REUPOKE address, bank, val, val, ...",
+      "description": "Writes the values to an attached REU starting at address in bank bank.",
+      "example": "REUPOKE 0, 0, 1, 2, 3",
+      "tokens": ["REU", "POKE"],
+      "composite": true
+    },
+    {
+      "keyword": "RIGHT$",
+      "group": "string",
+      "type": "function",
+      "category": "string",
+      "syntax": "RIGHT$(string, count)",
+      "description": "Returns count characters from the right of string.",
+      "example": "A$ = RIGHT$(B$, 5)",
+      "token": 201
+    },
+    {
+      "keyword": "RND",
+      "group": "math",
+      "type": "function",
+      "category": "math",
+      "syntax": "RND [0]",
+      "description": "Generates a random number. If 0 is supplied, limits the result to 0-255, otherwise 0-65535.",
+      "example": "A = RND 0",
+      "mathWarning": true,
+      "token": 187
+    },
+    {
+      "keyword": "RUN",
+      "group": "editor",
+      "type": "command",
+      "category": "editor",
+      "syntax": "RUN [line#]",
+      "description": "Runs the compiled, in-memory program. If the program is not compiled or has been altered, compiles it first. If line# is specified, starts there, otherwise from the first line.",
+      "example": "RUN",
+      "token": 138
+    },
+    {
+      "keyword": "SAVE",
+      "group": "io",
+      "type": "command",
+      "category": "io",
+      "syntax": "SAVE \"filename\"[, devnum]",
+      "description": "Saves a file to the default device. Filename must be 12 characters or less. If filename is not specified, the last specified filename is used.",
+      "example": "SAVE \"MYPROG\",8",
+      "token": 148
+    },
+    {
+      "keyword": "SEND",
+      "group": "flow",
+      "type": "command",
+      "category": "flow",
+      "syntax": "SEND vov",
+      "description": "Makes the subroutine return the value vov. Must be the final command before RETURN if used.",
+      "example": "SEND RESULT",
+      "notes": "Call a subroutine like tag.vop,vop,vop. Strings and string variables cannot be returned from subroutines.",
+      "warning": "Strings and string variables cannot be returned from subroutines.",
+      "token": 217
+    },
+    {
+      "keyword": "SGN",
+      "group": "math",
+      "type": "function",
+      "category": "math",
+      "syntax": "SGN(vov)",
+      "description": "Returns the sign of vov.",
+      "example": "A = SGN(B)",
+      "mathWarning": true,
+      "token": 180
+    },
+    {
+      "keyword": "SHAPE",
+      "group": "graphics",
+      "type": "command",
+      "category": "graphics",
+      "syntax": "SHAPE byte[, byte[, byte[, ...]]]",
+      "description": "Changes the current sprite's shape. If more than one shape is specified, sets the shape for the following sprites.",
+      "example": "SHAPE 255,255,255",
+      "notes": "Commands begin with MOB as a carryover from Simon's BASIC.",
+      "token": 246
+    },
+    {
+      "keyword": "SIDCLR",
+      "group": "sound",
+      "type": "command",
+      "category": "sound",
+      "syntax": "SIDCLR",
+      "description": "Clears the sound registers.",
+      "notes": "All parameters can be values or variables; a parameter left off reuses the previous value, or 0 if none was set. 0 disables, 1 enables.",
+      "token": 235
+    },
+    {
+      "keyword": "SIN",
+      "group": "math",
+      "type": "function",
+      "category": "math",
+      "syntax": "SIN(vov)",
+      "description": "Not available in Vision BASIC.",
+      "notes": "The BASIC V2 functions USR, FRE, POS, SQR, LOG, EXP, COS, SIN, TAN and ATN are not implemented by Vision BASIC.",
+      "unimplemented": true,
+      "token": 191
+    },
+    {
+      "keyword": "SLOW",
+      "group": "system",
+      "type": "command",
+      "category": "system",
+      "syntax": "SLOW",
+      "description": "Runs at normal C64 speeds.",
+      "token": 211
+    },
+    {
+      "keyword": "SPC(",
+      "group": "screen",
+      "type": "function",
+      "category": "screen",
+      "syntax": "SPC(vov)",
+      "description": "Prints vov spaces.",
+      "example": "PRINT SPC(10);\"HELLO\"",
+      "token": 166
+    },
+    {
+      "keyword": "SPLIT",
+      "group": "math",
+      "type": "command",
+      "category": "math",
+      "syntax": "SPLIT low, high[, high2] = vov",
+      "description": "Splits a variable into low and high bytes.",
+      "example": "SPLIT LO, HI = A",
+      "token": 130,
+      "prefix": 252
+    },
+    {
+      "keyword": "SQR",
+      "group": "math",
+      "type": "function",
+      "category": "math",
+      "syntax": "SQR(vov)",
+      "description": "Not available in Vision BASIC.",
+      "notes": "The BASIC V2 functions USR, FRE, POS, SQR, LOG, EXP, COS, SIN, TAN and ATN are not implemented by Vision BASIC.",
+      "unimplemented": true,
+      "token": 186
+    },
+    {
+      "keyword": "START",
+      "group": "assembler",
+      "type": "command",
+      "category": "assembly",
+      "syntax": "START [*=] address",
+      "description": "Specifies the starting location for an ML program.",
+      "example": "START *= 49152",
+      "notes": "Must be placed at the very beginning of your ML program, and only used once.",
+      "mlSafe": true,
+      "token": 176,
+      "prefix": 252
+    },
+    {
+      "keyword": "STARTINT",
+      "group": "system",
+      "type": "command",
+      "category": "system",
+      "syntax": "STARTINT",
+      "description": "Lets you program raster interrupts. Should be the first command in your interrupt routine.",
+      "notes": "It is critical to halt your interrupts before exiting your program.",
+      "warning": "Critical: always HALTINT before your program exits, or the machine is left running your raster interrupt.",
+      "tokens": ["START", "INT"],
+      "composite": true,
+      "mlSafe": true
+    },
+    {
+      "keyword": "STASH",
+      "group": "memory",
+      "type": "command",
+      "category": "memory",
+      "syntax": "STASH address, count, reu[, bank]",
+      "description": "Copies count C64 memory bytes at address address to the attached REU address reu in bank bank.",
+      "example": "STASH 49152, 4096, 0, 0",
+      "token": 152,
+      "prefix": 252
+    },
+    {
+      "keyword": "STATUS",
+      "group": "io",
+      "type": "function",
+      "category": "io",
+      "syntax": "STATUS",
+      "description": "Reads and clears the STatus of the last I/O operation.",
+      "example": "IF STATUS THEN PRINT \"ERROR\"",
+      "token": 203
+    },
+    {
+      "keyword": "STEP",
+      "group": "loop",
+      "type": "loop",
+      "category": "loop",
+      "syntax": "FOR var = start TO end STEP val",
+      "description": "Sets the increment of a FOR loop.",
+      "token": 169
+    },
+    {
+      "keyword": "STOP",
+      "group": "flow",
+      "type": "command",
+      "category": "flow",
+      "syntax": "STOP",
+      "description": "Stops the program execution but does not reset the screen.",
+      "token": 144
+    },
+    {
+      "keyword": "STR$",
+      "group": "string",
+      "type": "function",
+      "category": "string",
+      "syntax": "STR$(vov)",
+      "description": "Converts number vov into a string.",
+      "example": "A$ = STR$(N)",
+      "token": 196
+    },
+    {
+      "keyword": "STRINGS",
+      "group": "memory",
+      "type": "command",
+      "category": "memory",
+      "syntax": "STRINGS [size]",
+      "description": "With no parameter, stretches the string field to 53247, otherwise to size.",
+      "example": "STRINGS 49152",
+      "mlSafe": true,
+      "token": 182,
+      "prefix": 252
+    },
+    {
+      "keyword": "SUB",
+      "group": "variable",
+      "type": "command",
+      "category": "variables",
+      "syntax": "SUB",
+      "description": "Undocumented. Sits beside DUBL, LABEL and INTEGER in the DEF type group.",
+      "notes": "Present in the Vision BASIC token table but not documented in the cheat sheet.",
+      "varNote": true,
+      "token": 184,
+      "prefix": 252
+    },
+    {
+      "keyword": "SUBTRACT",
+      "group": "math",
+      "type": "command",
+      "category": "math",
+      "syntax": "SUBTRACT vop = vov - vov",
+      "description": "Fast subtraction of two values into an integer variable, tag or pointer.",
+      "example": "SUBTRACT A = B - 1",
+      "notes": "Works only with non-arrayed integer variables, tags and pointers.",
+      "mathWarning": true,
+      "mlSafe": true,
+      "token": 213
+    },
+    {
+      "keyword": "SWAP",
+      "group": "memory",
+      "type": "command",
+      "category": "memory",
+      "syntax": "SWAP count, reu[, c64, bank]",
+      "description": "Swaps the main memory at address c64 with the memory on the attached REU at address reu in bank bank.",
+      "example": "SWAP 4096, 0, 49152, 0",
+      "token": 154,
+      "prefix": 252
+    },
+    {
+      "keyword": "SWITCH",
+      "group": "memory",
+      "type": "command",
+      "category": "memory",
+      "syntax": "SWITCH start, end, start2",
+      "description": "Swaps the memory at addresses start-end with the memory starting at address start2.",
+      "example": "SWITCH 4096,8191,49152",
+      "token": 151,
+      "prefix": 252
+    },
+    {
+      "keyword": "SYS",
+      "group": "assembler",
+      "type": "command",
+      "category": "assembly",
+      "syntax": "SYS address[, A, X, Y, ST]",
+      "description": "Starts execution of ML code at address. If the A, X, Y and ST values are specified, they are loaded into the registers before starting.",
+      "example": "SYS 49152, 0, 1, 2",
+      "token": 158
+    },
+    {
+      "keyword": "TAB(",
+      "group": "screen",
+      "type": "function",
+      "category": "screen",
+      "syntax": "TAB(vov)",
+      "description": "Moves the cursor to vov on the current line.",
+      "example": "PRINT TAB(20);\"HELLO\"",
+      "token": 163
+    },
+    {
+      "keyword": "TAG",
+      "group": "variable",
+      "type": "command",
+      "category": "variables",
+      "syntax": "TAG tag [= vov]",
+      "description": "Creates a TAG named tag with the value vov. If vov is not specified, the tag gets the current address in the program. Used like a label in assembler.",
+      "example": "TAG SCREEN = 1024",
+      "notes": "Tags cannot be to the left of an equals sign in a math expression.",
+      "varNote": true,
+      "mlSafe": true,
+      "token": 247
+    },
+    {
+      "keyword": "TAN",
+      "group": "math",
+      "type": "function",
+      "category": "math",
+      "syntax": "TAN(vov)",
+      "description": "Not available in Vision BASIC.",
+      "notes": "The BASIC V2 functions USR, FRE, POS, SQR, LOG, EXP, COS, SIN, TAN and ATN are not implemented by Vision BASIC.",
+      "unimplemented": true,
+      "token": 192
+    },
+    {
+      "keyword": "THEN",
+      "group": "conditional",
+      "type": "conditional",
+      "category": "flow",
+      "syntax": "THEN statement",
+      "description": "If the prior IF expression evaluated to TRUE, statement will be executed.",
+      "example": "IF A = 1 THEN PRINT \"ONE\"",
+      "mathWarning": true,
+      "token": 167
+    },
+    {
+      "keyword": "TO",
+      "group": "loop",
+      "type": "loop",
+      "category": "loop",
+      "syntax": "FOR var = start TO end",
+      "description": "Separates the start and end values of a FOR loop.",
+      "token": 164
+    },
+    {
+      "keyword": "TRAP",
+      "group": "flow",
+      "type": "command",
+      "category": "flow",
+      "syntax": "TRAP line#[, vop]",
+      "description": "Sends control of your program to line# on error.",
+      "example": "TRAP 9000, ERRADDR",
+      "parameters": [
+        {
+          "name": "line#",
+          "type": "integer",
+          "description": "Line to jump to when an error occurs",
+          "optional": false
+        },
+        {
+          "name": "vop",
+          "type": "variable",
+          "description": "Non-arrayed int that will receive the address of the error",
+          "optional": true
+        }
+      ],
+      "token": 173,
+      "prefix": 252
+    },
+    {
+      "keyword": "TREND",
+      "group": "flow",
+      "type": "command",
+      "category": "flow",
+      "syntax": "TREND",
+      "description": "Undocumented.",
+      "notes": "Present in the Vision BASIC token table but not documented in the cheat sheet.",
+      "token": 174,
+      "prefix": 252
+    },
+    {
+      "keyword": "UPPERCASE",
+      "group": "screen",
+      "type": "command",
+      "category": "screen",
+      "syntax": "UPPERCASE [disable]",
+      "description": "Changes the character set to uppercase. If disable is 1, disables keyboard toggling between upper and lower case.",
+      "example": "UPPERCASE 1",
+      "token": 145,
+      "prefix": 252
+    },
+    {
+      "keyword": "USR",
+      "group": "math",
+      "type": "function",
+      "category": "math",
+      "syntax": "USR(vov)",
+      "description": "Not available in Vision BASIC.",
+      "notes": "The BASIC V2 functions USR, FRE, POS, SQR, LOG, EXP, COS, SIN, TAN and ATN are not implemented by Vision BASIC.",
+      "unimplemented": true,
+      "token": 183
+    },
+    {
+      "keyword": "VAL",
+      "group": "string",
+      "type": "function",
+      "category": "string",
+      "syntax": "VAL(string)",
+      "description": "Returns the mathematical value of string.",
+      "example": "A = VAL(N$)",
+      "token": 197
+    },
+    {
+      "keyword": "VARIABLES",
+      "group": "variable",
+      "type": "command",
+      "category": "variables",
+      "syntax": "VARIABLES [address]",
+      "description": "Moves the program variable table to address, or to 32768 if not specified.",
+      "example": "VARIABLES 40960",
+      "varNote": true,
+      "mlSafe": true,
+      "token": 183,
+      "prefix": 252
+    },
+    {
+      "keyword": "VERIFY",
+      "group": "io",
+      "type": "command",
+      "category": "io",
+      "syntax": "VERIFY \"filename\"[, devnum]",
+      "description": "Verifies the program in memory against a file on the default device. If filename is not specified, the last specified filename is used.",
+      "example": "VERIFY \"MYPROG\",8",
+      "token": 149
+    },
+    {
+      "keyword": "VERSION",
+      "group": "system",
+      "type": "command",
+      "category": "system",
+      "syntax": "VERSION number",
+      "description": "Specifies which version of Vision BASIC is needed to compile the block of code.",
+      "example": "VERSION 1.1",
+      "mlSafe": true,
+      "token": 206
+    },
+    {
+      "keyword": "VIDLOC",
+      "group": "screen",
+      "type": "command",
+      "category": "screen",
+      "syntax": "VIDLOC screen, printto, charset, clear",
+      "description": "Moves the text screen to any of the 64 1K screens available.",
+      "example": "VIDLOC 1,1,2,1",
+      "parameters": [
+        {
+          "name": "screen",
+          "type": "integer",
+          "range": "0-63",
+          "description": "Which 1K screen to display",
+          "optional": false
+        },
+        {
+          "name": "printto",
+          "type": "integer",
+          "range": "0-63",
+          "description": "Which screen to print to; usually equal to screen",
+          "optional": false
+        },
+        {
+          "name": "charset",
+          "type": "integer",
+          "description": "Location of the character set",
+          "optional": false
+        },
+        {
+          "name": "clear",
+          "type": "integer",
+          "range": "0-1",
+          "description": "1 clears the line link table, 0 does not",
+          "optional": false
+        }
+      ],
+      "token": 143,
+      "prefix": 252
+    },
+    {
+      "keyword": "VLINE",
+      "group": "graphics",
+      "type": "command",
+      "category": "graphics",
+      "syntax": "VLINE x, y, len, color",
+      "description": "Draws a straight vertical line starting at (x, y) and going down for len pixels in color.",
+      "example": "VLINE 160,0,200,1",
+      "notes": "All parameters can be values or variables. If a parameter is left off, a default or previous value is used.",
+      "token": 231
+    },
+    {
+      "keyword": "VLIST",
+      "group": "editor",
+      "type": "command",
+      "category": "editor",
+      "syntax": "VLIST [num]",
+      "description": "Displays all of the variables from the program in memory. If num is specified, sends the output to a printer.",
+      "example": "VLIST",
+      "token": 130,
+      "prefix": 255
+    },
+    {
+      "keyword": "VOICE",
+      "group": "sound",
+      "type": "command",
+      "category": "sound",
+      "syntax": "VOICE num",
+      "description": "Chooses which voice will be used.",
+      "example": "VOICE 1",
+      "notes": "All parameters can be values or variables; a parameter left off reuses the previous value, or 0 if none was set. 0 disables, 1 enables.",
+      "parameters": [
+        {
+          "name": "num",
+          "type": "integer",
+          "range": "1-3",
+          "description": "SID voice to make current",
+          "optional": false
+        }
+      ],
+      "warning": "Must be called before FREQ, PULSE, ADSR and WAVE \u2014 they all act on the current voice.",
+      "token": 236
+    },
+    {
+      "keyword": "VOL",
+      "group": "sound",
+      "type": "command",
+      "category": "sound",
+      "syntax": "VOL volume, low, band, high, disconnect",
+      "description": "Controls the main volume and filter selection.",
+      "example": "VOL 15,0,0,0,0",
+      "notes": "All parameters can be values or variables; a parameter left off reuses the previous value, or 0 if none was set. 0 disables, 1 enables.",
+      "parameters": [
+        {
+          "name": "volume",
+          "type": "integer",
+          "range": "0-15",
+          "description": "Main SID volume",
+          "optional": false
+        },
+        {
+          "name": "low",
+          "type": "integer",
+          "range": "0-1",
+          "description": "Low pass filter",
+          "optional": false
+        },
+        {
+          "name": "band",
+          "type": "integer",
+          "range": "0-1",
+          "description": "Band pass filter",
+          "optional": false
+        },
+        {
+          "name": "high",
+          "type": "integer",
+          "range": "0-1",
+          "description": "High pass filter",
+          "optional": false
+        },
+        {
+          "name": "disconnect",
+          "type": "integer",
+          "range": "0-1",
+          "description": "Disconnects the output of voice 3",
+          "optional": false
+        }
+      ],
+      "token": 234
+    },
+    {
+      "keyword": "WAIT",
+      "group": "system",
+      "type": "command",
+      "category": "system",
+      "syntax": "WAIT address, and, eor",
+      "description": "Waits for a non-0 result from PEEKing address and filtering it with AND and and EOR eor.",
+      "example": "WAIT 53265, 128, 0",
+      "token": 146
+    },
+    {
+      "keyword": "WAVE",
+      "group": "sound",
+      "type": "command",
+      "category": "sound",
+      "syntax": "WAVE gate, wave, ring, sync, test",
+      "description": "Sets the waveform and gate for the current voice.",
+      "example": "WAVE 1,4,0,0,0",
+      "notes": "Requires a current VOICE to be selected before calling. All parameters can be values or variables; a parameter left off reuses the previous value, or 0 if none was set. 0 disables, 1 enables.",
+      "parameters": [
+        {
+          "name": "gate",
+          "type": "integer",
+          "range": "0-1",
+          "description": "Enables or disables the gate",
+          "optional": false
+        },
+        {
+          "name": "wave",
+          "type": "integer",
+          "range": "1 | 2 | 4 | 8",
+          "description": "1 triangle, 2 sawtooth, 4 pulse, 8 noise",
+          "optional": false
+        },
+        {
+          "name": "ring",
+          "type": "integer",
+          "range": "0-1",
+          "description": "Ring modulate oscillators",
+          "optional": false
+        },
+        {
+          "name": "sync",
+          "type": "integer",
+          "range": "0-1",
+          "description": "Sync modulate oscillators",
+          "optional": false
+        },
+        {
+          "name": "test",
+          "type": "integer",
+          "range": "0-1",
+          "description": "Enables or disables the voice oscillator",
+          "optional": false
+        }
+      ],
+      "token": 239
+    },
+    {
+      "keyword": "WHOLE",
+      "group": "math",
+      "type": "function",
+      "category": "math",
+      "syntax": "WHOLE(vov)",
+      "description": "Returns the integer value of vov without rounding.",
+      "example": "A = WHOLE(B)",
+      "mathWarning": true,
+      "token": 208
+    },
+    {
+      "keyword": "\u03c0",
+      "group": "math",
+      "type": "function",
+      "category": "math",
+      "syntax": "\u03c0",
+      "description": "The value of PI in decimal.",
+      "example": "A = \u03c0"
+    }
+  ]
+}

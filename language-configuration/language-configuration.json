@@ -8,15 +8,29 @@
   ],
   "autoClosingPairs": [
     { "open": "[", "close": "]" },
-    { "open": "\"", "close": "\"" }
+    { "open": "(", "close": ")" },
+    { "open": "\"", "close": "\"", "notIn": ["string"] }
   ],
   "surroundingPairs": [
     ["[", "]"],
+    ["(", ")"],
     ["\"", "\""]
   ],
-  "wordPattern": "[A-Za-z][A-Za-z0-9!@#%&?]{0,7}\\$?",
+  "wordPattern": "[A-Za-z][A-Za-z0-9!@#%&?]*\\$?",
   "indentationRules": {
-    "increaseIndentPattern": "\\b(FOR|DO)\\b",
-    "decreaseIndentPattern": "\\b(NEXT|RETURN)\\b"
-  }
+    "increaseIndentPattern": "(?i)\\b(FOR|DO|PROC|STARTINT|MODULE(?!\\s+END)|LOCAL)\\b",
+    "decreaseIndentPattern": "(?i)\\b(NEXT|RETURN|INTEND|MODULE\\s+END|GLOBAL)\\b"
+  },
+  "folding": {
+    "markers": {
+      "start": "(?i)^\\s*\\d*\\s*(PROC|MODULE(?!\\s+END)|STARTINT)\\b",
+      "end": "(?i)^\\s*\\d*\\s*(RETURN|MODULE\\s+END|INTEND)\\b"
+    }
+  },
+  "onEnterRules": [
+    {
+      "beforeText": "^\\s*(\\d+)\\s",
+      "action": { "indent": "none" }
+    }
+  ]
 }

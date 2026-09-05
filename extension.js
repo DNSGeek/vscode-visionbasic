@@ -1,760 +1,384 @@
 "use strict";
 
+const fs = require("fs");
+const path = require("path");
 const vscode = require("vscode");
 
-// ─── Complete command reference from DNSGeek cheat sheet ─────────────────────
-const HOVER_DOCS = {
-  // Editing Keywords
-  ASSEM: {
-    sig: "ASSEM",
-    desc: "Switches into assembler mode. Mnemonics must be enclosed in `[]` brackets. Use `BASIC` to return.",
-  },
-  BANK: {
-    sig: "BANK [bank[-bank][, on/off]]",
-    desc: "Display current bank number, or change to specified bank. If on/off specified, enables or disables the banks.",
-  },
-  BASIC: {
-    sig: "BASIC",
-    desc: "Switches out of assembler mode, back to BASIC mode.",
-  },
-  COMP: {
-    sig: 'COMP ["filename"[, devnum]]',
-    desc: "Compiles the program in memory and optionally saves it to a file. `filename` must be 12 characters or less.",
-  },
-  DELETE: {
-    sig: "DELETE [start - end]",
-    desc: "Deletes a range of lines from `start` to `end`. With no parameters, acts like NEW.",
-  },
-  DESC: {
-    sig: "DESC line#, label",
-    desc: "Creates a subroutine label and starts the code at `line#`.",
-  },
-  ERROR: { sig: "ERROR", desc: "Displays the errors." },
-  EXEC: {
-    sig: "EXEC command block  (shorthand: >)",
-    desc: "Runs a single line in immediate mode.",
-  },
-  FAST: { sig: "FAST", desc: "Enables speed up of some commands." },
-  FIND: {
-    sig: "FIND text",
-    desc: "Searches the program in the current bank for lines containing `text`. Do not use quotes for keywords. Prefix assembly instructions with `[`.",
-  },
-  LIST: {
-    sig: "LIST [line#[-line#]]",
-    desc: "Displays the program in memory. Can optionally display only lines between the given parameters.",
-  },
-  LISTER: {
-    sig: "LISTER [line#]",
-    desc: "A scrollable LIST. If `line#` specified, starts at that line.",
-  },
-  LITE: {
-    sig: "LITE [0/1]",
-    desc: "With no parameter or 1, enables LITE mode. 0 disables it.",
-  },
-  LLIST: {
-    sig: "LLIST [line#[-line#[, printer?]]]",
-    desc: "Displays extended details about the program in memory. If `printer?` is 1, output is sent to a printer.",
-  },
-  NEW: {
-    sig: "NEW [bank[-bank]]",
-    desc: "Clears the current program bank, or banks specified.",
-  },
-  OLD: {
-    sig: "OLD [bank[-bank]]",
-    desc: "Attempts to restore the program in the current bank, or banks specified.",
-  },
-  PLIST: {
-    sig: "PLIST [line#[-line#]]",
-    desc: "Sends the program LIST to a printer.",
-  },
-  QUIT: { sig: "QUIT", desc: "Quits Vision BASIC." },
-  RENUM: {
-    sig: "RENUM start-end, new[, step]",
-    desc: "Renumbers the lines from `start` to `end` to `new`, using a step of 10 if not specified.",
-  },
-  RUN: {
-    sig: "RUN [line#]",
-    desc: "Runs the compiled in-memory program. If not compiled or altered, will compile first. If `line#` specified, starts there.",
-  },
-  SLOW: { sig: "SLOW", desc: "Runs at normal C64 speeds." },
-  VLIST: {
-    sig: "VLIST [num]",
-    desc: "Displays all variables from the program in memory. If `num` specified, sends output to a printer.",
-  },
+const LANG = "visionbasic";
 
-  // Disk and File Commands
-  DEVICE: {
-    sig: "DEVICE devnum",
-    desc: "Sets the device number for the default device.",
-  },
-  DIR: {
-    sig: "DIR [num]",
-    desc: "Lists the current device's directory. If `num` is supplied, output is sent to a printer.",
-  },
-  DISK: {
-    sig: 'DISK ["command"[, devnum]]',
-    desc: 'Equivalent to OPEN 15,devnum,15,"command":CLOSE 15. Uses default device if not specified. Initialises if command not specified.',
-  },
-  GSAVE: {
-    sig: "GSAVE on",
-    desc: "Saves a copy of C64 RAM to GeoRAM expanded memory. If `on` is 1, enables the back-up feature.",
-  },
-  LOAD: {
-    sig: 'LOAD "filename"[, devnum]',
-    desc: "Loads a file from the default device. If filename not specified, uses last specified filename.",
-  },
-  SAVE: {
-    sig: 'SAVE "filename"[, devnum]',
-    desc: "Saves a file to the default device. Filename must be 12 characters or less.",
-  },
-  VERIFY: {
-    sig: 'VERIFY "filename"[, devnum]',
-    desc: "Verifies the program in memory against a file on the default device.",
-  },
+/** @type {{keywords: any[], mnemonics: string[], notes: any, mlSafe: string[], groups: any, version: string, url: string}} */
+let DB;
+/** @type {Map<string, any>} */
+const BY_NAME = new Map();
+/** @type {Set<string>} */
+const MNEMONICS = new Set();
 
-  // Variables
-  CLR: { sig: "CLR", desc: "Clears the memory used by all variables." },
-  DECIMAL: {
-    sig: "DECIMAL variable[, variable[, ...]]",
-    desc: "Creates new decimal (floating point) variables. All variables are integers by default.",
-  },
-  DIM: {
-    sig: "DIM [DECIMAL] variable(value)",
-    desc: "Creates an array variable of `value` size. Optionally DECIMAL for floating point arrays.",
-  },
-  GLOBAL: { sig: "GLOBAL", desc: "Restores the global variable scope." },
-  LET: {
-    sig: "LET var = value",
-    desc: "Assigns a simple value to a simple variable. Useful for speed — slightly faster than direct assignment.",
-  },
-  LOCAL: { sig: "LOCAL", desc: "Starts a local scope for variables." },
-  TAG: {
-    sig: "TAG tag = value",
-    desc: "Creates a TAG named `tag` with value `value`. Like a label in assembler. Tags cannot be to the left of an equals sign in a math expression.",
-  },
-  VARIABLES: {
-    sig: "VARIABLES [address]",
-    desc: "Moves the program variable table to `address`, or 32768 if not specified.",
-  },
-  LABEL: { sig: "LABEL", desc: "Identical to TAG." },
+// ─── Database ────────────────────────────────────────────────────────────────
 
-  // Math
-  ABS: { sig: "ABS(vov)", desc: "Returns the absolute value of `vov`." },
-  INT: {
-    sig: "INT(vov)",
-    desc: "Returns the integer value of `vov`, rounded down.",
-  },
-  SGN: { sig: "SGN(vov)", desc: "Returns the sign of `vov`." },
-  WHOLE: {
-    sig: "WHOLE(vov)",
-    desc: "Returns the integer value of `vov` without rounding.",
-  },
-  FRAC: {
-    sig: "FRAC(vov)",
-    desc: "Returns the fractional value of `vov`, stripped of the sign.",
-  },
-  RANDOM: {
-    sig: "RANDOM [seed]",
-    desc: "Initialises the random number table. If no parameter, uses SID voice 3. Otherwise seeded with `seed`.",
-  },
-  RND: {
-    sig: "RND [0]",
-    desc: "Generates a random number. If 0 supplied, limits numbers to 0-255, otherwise 0-65535. Call RANDOM first to initialise.",
-  },
+function loadDatabase(context) {
+  const file = path.join(context.extensionPath, "data", "visionbasic.json");
+  DB = JSON.parse(fs.readFileSync(file, "utf8"));
+  for (const kw of DB.keywords) {
+    BY_NAME.set(kw.keyword.toUpperCase(), kw);
+    // "SPC(" and "TAB(" are written without the paren when looked up as a word.
+    const bare = kw.keyword.replace(/\($/, "");
+    if (!BY_NAME.has(bare.toUpperCase())) BY_NAME.set(bare.toUpperCase(), kw);
+  }
+  for (const m of DB.mnemonics) MNEMONICS.add(m.toUpperCase());
+}
 
-  // Speedy Math
-  ADD: {
-    sig: "ADD vop = vov + vov",
-    desc: "Fast addition. Only works with non-arrayed integer variables, tags and pointers.",
-  },
-  COMPARE: {
-    sig: "COMPARE vov, vov",
-    desc: "Fast comparison. Both parameters must be 2-byte ints.",
-  },
-  DEC: {
-    sig: "DEC vop",
-    desc: "Decrements `vop` by 1. Works on non-arrayed integer and decimal variables.",
-  },
-  DOUBLE: {
-    sig: "DOUBLE vop",
-    desc: "Multiplies `vop` by 2. Works on non-arrayed integer and decimal variables.",
-  },
-  HALF: {
-    sig: "HALF vop",
-    desc: "Divides `vop` by 2. Works on non-arrayed integer and decimal variables.",
-  },
-  INC: {
-    sig: "INC vop",
-    desc: "Increments `vop` by 1. Works on non-arrayed integer and decimal variables.",
-  },
-  SUBTRACT: {
-    sig: "SUBTRACT vop = vov - vov",
-    desc: "Fast subtraction. Only works with non-arrayed integer variables, tags and pointers.",
-  },
+function lookup(word) {
+  return BY_NAME.get(String(word).toUpperCase());
+}
 
-  // Bitmap Commands
-  BITMAP: {
-    sig: "BITMAP [bmp, multicolor, map, drawto, screen, color1, color2, color3, clearcol, clearmap]",
-    desc: "Turns modes bmp and multicolor on (1) or off (0).",
-  },
-  BMPCLR: {
-    sig: "BMPCLR [clearmap[, clearcol]]",
-    desc: "Clears the currently visible bitmap screen if `clearmap` is 1, and color screen if `clearcol` is 1. If neither specified, clears both.",
-  },
-  BMPCOL: {
-    sig: "BMPCOL screen, color1, color2, color3, clearcol[, clearmap]",
-    desc: "Sets the bitmap colors and defines which screen to use. If `clearmap` is 1, clears the bitmap.",
-  },
-  BMPLOC: {
-    sig: "BMPLOC map, drawto",
-    desc: "`map` sets which bitmap screen is visible (0-7). `drawto` sets which screen will be drawn to with drawing commands.",
-  },
-  HLINE: {
-    sig: "HLINE x, y, len, color",
-    desc: "Draws a horizontal line starting at (x, y) continuing right for `len` pixels in `color`.",
-  },
-  LIMITS: {
-    sig: "LIMITS width, height, xpos, ypos, colorplot",
-    desc: "Limits the area on the bitmap that drawing commands will affect.",
-  },
-  LINE: {
-    sig: "LINE x1, y1[, x2, y2[, color]]",
-    desc: "Draws a line from (x1, y1) to (x2, y2) in `color`. If x2/y2 not specified, draws to current coordinate.",
-  },
-  PLOT: {
-    sig: "PLOT x, y, color",
-    desc: "Draws a pixel on the bitmap at coordinates (x, y) in `color`.",
-  },
-  VLINE: {
-    sig: "VLINE x, y, len, color",
-    desc: "Draws a vertical line starting at (x, y) going down for `len` pixels in `color`.",
-  },
+// ─── Markdown rendering ──────────────────────────────────────────────────────
 
-  // Sprite Commands
-  ALLMOBS: {
-    sig: "ALLMOBS x0,y0, x1,y1, x2,y2, x3,y3, x4,y4, x5,y5, x6,y6, x7,y7",
-    desc: "Sets all 8 sprite positions in a single command.",
-  },
-  CODE: {
-    sig: "CODE values...",
-    desc: 'Any code following this command will be stored in memory at the location indicated by the "code" pointer.',
-  },
-  COLLISION: {
-    sig: "COLLISION selection",
-    desc: "Copies collision registers and zeros the copied register. `selection` 0 = sprite-to-sprite, 1 = sprite-to-foreground.",
-  },
-  DETECT: {
-    sig: "DETECT mob#[, mob#[, ...]]",
-    desc: "Used after COLLISION. Checks if the specified sprites were involved in a collision.",
-  },
-  MOB: {
-    sig: "MOB number, on, multicolor, priority, x, y, x-add, y-add",
-    desc: "Chooses and initialises a sprite. `number` 0-7, `on` enables/disables, `multicolor` mode, `priority` enables background priority, x/y initial coords, x-add/y-add set offsets.",
-  },
-  MOBCLR: {
-    sig: "MOBCLR",
-    desc: "Clears all sprite registers. Recommended at the start of programs using sprites.",
-  },
-  MOBCOL: {
-    sig: "MOBCOL color, shared1, shared2",
-    desc: "Sets sprite colors. `color` sets current sprite color, `shared1`/`shared2` set the shared multicolor sprite colors.",
-  },
-  MOBEXP: {
-    sig: "MOBEXP xexpan, yexpan",
-    desc: "Enables and disables X-expansion and Y-expansion of the current sprite.",
-  },
-  MOBPAT: {
-    sig: "MOBPAT shape#, bank",
-    desc: "Moves the CODE pointer to point at the specified sprite's data. `shape#` is the shape, `bank` is where coded data will be sent.",
-  },
-  MOBSET: {
-    sig: "MOBSET shape#, number, number, number, ...",
-    desc: "Initialises a sprite from The Spreditor.",
-  },
-  MOBXY: {
-    sig: "MOBXY x, y, x-add, y-add",
-    desc: "Moves the current sprite to coordinates (x, y). `x-add` and `y-add` set offsets.",
-  },
-  SHAPE: {
-    sig: "SHAPE byte[, byte[, ...]]",
-    desc: "Changes the current sprite's shape. If more than 1 shape specified, sets shape for following sprites.",
-  },
+function renderKeyword(kw) {
+  const md = new vscode.MarkdownString();
+  md.supportHtml = false;
+  md.appendCodeblock(kw.syntax || kw.keyword, LANG);
+  md.appendMarkdown(kw.description || "");
 
-  // Interrupt Commands
-  HALTINT: {
-    sig: "HALTINT",
-    desc: "Stops the interrupt totally, returning interrupts to normal. Critical to call before exiting your program.",
-  },
-  INTEND: {
-    sig: "INTEND flag",
-    desc: "Should be the last statement in your interrupt routine. If `flag` is 0, JMP to BASIC's hardware timer routine; 1 will RTI.",
-  },
-  INTERRUPT: {
-    sig: "INTERRUPT raster, line#",
-    desc: "Creates a new raster interrupt at line `raster` (50-249) which calls the code at `line#`.",
-  },
-  RASTER: {
-    sig: "RASTER raster",
-    desc: "Selects the next raster line to interrupt.",
-  },
-  STARTINT: {
-    sig: "STARTINT",
-    desc: "Should be the first command in your interrupt routine.",
-  },
+  if (kw.parameters && kw.parameters.length) {
+    md.appendMarkdown("\n\n| Parameter | Range | Meaning |\n|---|---|---|\n");
+    for (const p of kw.parameters) {
+      const name = p.optional ? `_${p.name}_` : `**${p.name}**`;
+      const range = p.range || p.type || "";
+      md.appendMarkdown(
+        `| ${name} | ${range} | ${(p.description || "").replace(/\|/g, "\\|")} |\n`,
+      );
+    }
+  }
 
-  // Sound Commands
-  ADSR: {
-    sig: "ADSR attack, decay, sustain, release",
-    desc: "Specifies the attack, decay, sustain and release parameters for the current VOICE. Call VOICE before this.",
-  },
-  CUTOFF: {
-    sig: "CUTOFF freq",
-    desc: "Sets the cutoff frequency for the SID filtering system.",
-  },
-  FILTER: {
-    sig: "FILTER voice1, voice2, voice3, ext, resonance",
-    desc: "Enables or disables filters for each voice, the external input, and the resonance value.",
-  },
-  FREQ: {
-    sig: "FREQ freq",
-    desc: "Specifies the frequency the current voice will play. Call VOICE before this.",
-  },
-  PULSE: {
-    sig: "PULSE width",
-    desc: "Specifies the pulse waveform width for the current voice. Call VOICE before this.",
-  },
-  SIDCLR: { sig: "SIDCLR", desc: "Clears all sound registers." },
-  VOICE: {
-    sig: "VOICE num",
-    desc: "Chooses which SID voice to use (1-3). Required before FREQ, PULSE, ADSR, and WAVE.",
-  },
-  VOL: {
-    sig: "VOL volume, low, band, high, disconnect",
-    desc: "Controls main volume and filter selection. Can enable/disable low, band and high pass filters. `disconnect` disconnects voice 3 output.",
-  },
-  WAVE: {
-    sig: "WAVE gate, wave, ring, sync, test",
-    desc: "Enables/disables the gate. `wave`: 1=triangle, 2=sawtooth, 4=pulse, 8=noise. `ring`/`sync` choose modulation. `test` enables/disables the oscillator. Call VOICE first.",
-  },
+  if (kw.example) {
+    md.appendMarkdown("\n\n**Example**\n");
+    md.appendCodeblock(kw.example, LANG);
+  }
 
-  // Text Video Commands
-  BLANK: {
-    sig: "BLANK [blank[, bg, bars1, bars2]]",
-    desc: "Blanks or restores the screen. 1 blanks, 0 un-blanks. `bg` changes background color (0-15). `bars` changes bar colors.",
-  },
-  CATCH: {
-    sig: "CATCH rasterline",
-    desc: "Acts like a WAIT command for the rasterline. `rasterline` can be 0-255.",
-  },
-  CHARPAT: {
-    sig: "CHARPAT character, charset",
-    desc: 'Moves the "code" pointer to point at a specific character image in `charset`.',
-  },
-  CHARSET: {
-    sig: "CHARSET charset",
-    desc: "Selects the desired character set.",
-  },
-  COLORS: {
-    sig: "COLORS text, border, screen, color1, color2, color3",
-    desc: "Sets the color registers.",
-  },
-  COPYSET: {
-    sig: "COPYSET charset[, case]",
-    desc: "Copies the C64 character set to location `charset`. `case` 0 = uppercase, 1 = lowercase.",
-  },
-  EXTENDED: {
-    sig: "EXTENDED on[, color1, color2, color3]",
-    desc: "Turns extended color mode on or off. If colors supplied, sets the 3 background colors.",
-  },
-  LOWERCASE: {
-    sig: "LOWERCASE [disable]",
-    desc: "Changes the character set to lowercase. If `disable` is 1, disables keyboard toggling between upper and lower case.",
-  },
-  MULTI: {
-    sig: "MULTI on[, color1, color2]",
-    desc: "Turns multicolor mode on or off. If colors specified, sets the background colors.",
-  },
-  NORMAL: {
-    sig: "NORMAL clear",
-    desc: "Resets the screen to normal text mode. 1 clears the line link table, 0 does not.",
-  },
-  PANX: {
-    sig: "PANX panvalue, columns",
-    desc: "Pans the screen horizontally. `panvalue` (bit-reversed) 0-7 (0=none). `columns` 0=38 column, 1=40 column screen.",
-  },
-  PANY: {
-    sig: "PANY panvalue, rows",
-    desc: "Pans the screen vertically. `panvalue` (bit-reversed) 0-7 (3=none). `rows` 0=24 row, 1=25 row screen.",
-  },
-  UPPERCASE: {
-    sig: "UPPERCASE [disable]",
-    desc: "Changes the character set to uppercase. If `disable` is 1, disables keyboard toggling.",
-  },
-  VIDLOC: {
-    sig: "VIDLOC screen, printto, charset, clear",
-    desc: "Moves the text screen to one of 64 1K screens. `screen` chooses which 1K, `printto` chooses which to print to, `charset` selects charset location, `clear` 1 clears line link table.",
-  },
+  if (kw.notes) md.appendMarkdown(`\n\n${kw.notes}`);
+  if (kw.warning) md.appendMarkdown(`\n\n> ⚠️ ${kw.warning}`);
+  if (kw.mathWarning) md.appendMarkdown(`\n\n> ℹ️ ${DB.notes.math}`);
+  if (kw.varNote) md.appendMarkdown(`\n\n> ℹ️ ${DB.notes.variables}`);
+  if (kw.unimplemented) {
+    md.appendMarkdown(
+      "\n\n> 🚫 This BASIC V2 keyword is **not implemented** by Vision BASIC.",
+    );
+  }
+  if (kw.mlSafe) {
+    md.appendMarkdown(
+      "\n\n> ✅ ML-safe — may be used inside an `ASSEM` block.",
+    );
+  }
+  if (kw.composite && kw.tokens) {
+    md.appendMarkdown(
+      `\n\n<small>Tokenised as the pair \`${kw.tokens.join(" + ")}\`.</small>`,
+    );
+  }
+  return md;
+}
 
-  // Core BASIC Keywords
-  ASC: { sig: "ASC(string)", desc: "Returns the ASCII value of `string`." },
-  BUTTON: {
-    sig: "BUTTON joynum[, button#]",
-    desc: "Returns 1 if the joystick button is pressed, 0 if not. `button#` 1, 2 or 3, default is 1.",
-  },
-  BYTES: {
-    sig: "BYTES count[, byte[, tag[, alignment]]]",
-    desc: "When compiling, inserts `count` bytes of value `byte` (default 0), with label `tag`, aligned to `alignment`.",
-  },
-  CHR$: {
-    sig: "CHR$(vov[, count])",
-    desc: "Appends ASCII character `vov` to a string, 1 or `count` times.",
-  },
-  CLOCK: {
-    sig: "CLOCK [jiffies]",
-    desc: "Sets the CLOCK to `jiffies` if specified, or 0 if not.",
-  },
-  CLOSE: { sig: "CLOSE file#, file#, ...", desc: "Closes 1 or more files." },
-  CLS: {
-    sig: "CLS [pokecode[, color]]",
-    desc: "Clears the current text screen. Uses space if `pokecode` not specified. Colors not changed unless `color` specified.",
-  },
-  CMD: {
-    sig: "CMD file#[, string]",
-    desc: "Redirects all I/O to file `file#`. Optionally sends `string` to the file.",
-  },
-  COPY: {
-    sig: "COPY start, end, new",
-    desc: "Copies memory from addresses `start-end` to address `new`.",
-  },
-  DATA: { sig: "DATA val, val, ...", desc: "Holds data to be READ later." },
-  DEBUG: {
-    sig: "DEBUG 0 | 1",
-    desc: "Enables (1) or disables (0) DEBUG mode. DEBUG reduces compilation passes — results in slower and larger programs.",
-  },
-  DEF: {
-    sig: "DEF type var[, var, ...]",
-    desc: "Defines variable types in a structured fashion. `type` can be TAG, LABEL, INT, INTEGER or DECIMAL.",
-  },
-  DETEXT: {
-    sig: "DETEXT(type)",
-    desc: "Returns how much extended memory of `type` is attached to the system.",
-  },
-  DO: {
-    sig: "DO line#, times",
-    desc: "Runs line `line#` exactly `times` times. Only works with integer variables.",
-  },
-  DUP$: {
-    sig: "DUP$(string, count)",
-    desc: "Duplicates `string` exactly `count` times.",
-  },
-  ELSE: {
-    sig: "ELSE statement",
-    desc: "If the prior IF expression evaluated to FALSE, `statement` will be executed.",
-  },
-  END: {
-    sig: "END",
-    desc: "Ends execution of the program and returns screen to normal.",
-  },
-  FETCH: {
-    sig: "FETCH count, destination, reu[, bank]",
-    desc: "Copies `count` bytes from attached REU at address `reu` in `bank` to C64 address `destination`.",
-  },
-  FILL: {
-    sig: "FILL start, end[, byte[, step]]",
-    desc: "Fills memory from address `start` to `end` with value `byte` (default 0), incrementing by `step` (default 1).",
-  },
-  FOR: {
-    sig: "FOR var = start TO end [STEP val]",
-    desc: "Defines a FOR loop. Only works with integer variables. Increment defaults to 1 unless STEP specified.",
-  },
-  GET: {
-    sig: "GET variable",
-    desc: "Reads a character and puts it in `variable`.",
-  },
-  GOSUB: {
-    sig: "GOSUB line#[, line#[, ...]]",
-    desc: "Runs a subroutine at `line#`. If more than 1 line# specified, runs each in order.",
-  },
-  GOTO: {
-    sig: "GOTO tag | line_number",
-    desc: "Jumps to `line_number` or `tag` in the program.",
-  },
-  HALT: {
-    sig: "HALT",
-    desc: "Stops compilation at this point. All previous code will be compiled. Use RESUME to continue.",
-  },
-  IF: {
-    sig: "IF expression [AND | OR | EOR expression]",
-    desc: "Evaluates the expression and sets a flag acted upon when the program reaches a THEN statement.",
-  },
-  INPUT: {
-    sig: "INPUT var, var, ...",
-    desc: "Reads lines and puts the values in `var`.",
-  },
-  JOIN: {
-    sig: "JOIN vop = low, high",
-    desc: "Opposite of SPLIT. Joins low and high bytes into a single value.",
-  },
-  JOY: {
-    sig: "JOY(joynum)",
-    desc: "Returns the value of joystick port `joynum`. Typically 1 or 2.",
-  },
-  KEYPRESS: {
-    sig: "KEYPRESS [vov[, vov]]",
-    desc: "If `vov` not specified, waits for any keypress. Otherwise waits for `vov`. Second `vov` acts like an IF block (FALSE=first char, TRUE=second char).",
-  },
-  LEFT$: {
-    sig: "LEFT$(string, count)",
-    desc: "Returns `count` characters from the left of `string`.",
-  },
-  LEN: { sig: "LEN(string)", desc: "Returns the length of `string`." },
-  LOC: {
-    sig: "LOC(x, y)",
-    desc: "Moves the cursor to location x, y on the current text screen.",
-  },
-  MID$: {
-    sig: "MID$(string, position, count)",
-    desc: "Returns `count` characters starting at index `position` from `string`.",
-  },
-  MODULE: {
-    sig: "MODULE filename[, devnum[, address]]",
-    desc: "When compiling, writes this section to a separate module file for reusability. Default address is 49152.",
-  },
-  NEXT: {
-    sig: "NEXT var[, var[, ...]]",
-    desc: "The end of a FOR loop. `var` must match the corresponding FOR loop.",
-  },
-  ON: {
-    sig: "ON var GOSUB | GOTO line#, line#, ...",
-    desc: "Jumps to the `line#` that matches the value of `var`.",
-  },
-  OPEN: {
-    sig: "OPEN file#, dev#, secondary, string",
-    desc: "Opens a connection to device `dev#` assigned to file `file#` with secondary parameter and optional string.",
-  },
-  PADBUT: {
-    sig: "PADBUT joynum",
-    desc: "Returns 1 if the paddle button is pressed, 0 if not.",
-  },
-  PADDLE: {
-    sig: "PADDLE joynum",
-    desc: "Returns the value of the paddle (0-255). Paddles 1-2 are in joynum 1, 3-4 in 2. Returned values are bit-reversed. Use POKE 2383,0 to disable bit-reversing.",
-  },
-  PAUSE: {
-    sig: "PAUSE seconds[, jiffies]",
-    desc: "Pauses execution for `seconds` seconds. Optional `jiffies` adds (jiffies/60) seconds.",
-  },
-  PEEK: {
-    sig: "PEEK(vov[, index])",
-    desc: "Returns the memory at address `vov`, optionally offset by `index`.",
-  },
-  POINT: {
-    sig: "POINT vop = line#  |  POINT TAG tag = line#",
-    desc: "Sets `vop` to the address of the compiled code for `line#`. TAG form creates a tag pointing to that address.",
-  },
-  POKE: {
-    sig: "POKE address, vov, vov, ...",
-    desc: "Puts values `vov` in consecutive memory starting at `address`. Can also be used with strings.",
-  },
-  POLL: {
-    sig: "POLL port#",
-    desc: "Tells the C64 which set of paddles you're polling. `port#` 1 = joystick port 1, 2 = port 2.",
-  },
-  PRINT: {
-    sig: "PRINT expression",
-    desc: "Prints `expression` to the current text screen.",
-  },
-  PROC: {
-    sig: "PROC tag[. vop[, vop[, ...]]]",
-    desc: "Defines the start of a subroutine named `tag` with parameters `vop`. Call with tag.vop,vop syntax. Strings cannot be returned.",
-  },
-  PASS: {
-    sig: "PASS vop[, vop[, ...]]",
-    desc: "Defines parameters for a subroutine. Must be the first command after PROC if passing parameters.",
-  },
-  READ: {
-    sig: "READ vop, vop, ...",
-    desc: "Reads values from a DATA statement.",
-  },
-  REM: { sig: "REM", desc: "Turns the rest of the line into a comment." },
-  RESTORE: {
-    sig: "RESTORE [line#]",
-    desc: "Resets the pointer to the start of all DATA statements, or to the DATA statement on `line#`.",
-  },
-  RESUME: {
-    sig: "RESUME",
-    desc: "Resumes compilation after a HALT. Must be at the beginning of a line or it will be ignored.",
-  },
-  RETURN: {
-    sig: "RETURN",
-    desc: "Ends a subroutine and sends program flow back to the GOSUB statement.",
-  },
-  REUPEEK: {
-    sig: "REUPEEK(address, bank)",
-    desc: "Returns the value from an attached REU at `address` in `bank`.",
-  },
-  REUPOKE: {
-    sig: "REUPOKE address, bank, val, val, ...",
-    desc: "Writes values to an attached REU starting at `address` in `bank`.",
-  },
-  RIGHT$: {
-    sig: "RIGHT$(string, count)",
-    desc: "Returns `count` characters from the right of `string`.",
-  },
-  SEND: {
-    sig: "SEND vov",
-    desc: "Makes the subroutine return the value `vov`. Must be the final command before RETURN. Strings cannot be returned.",
-  },
-  SPC: { sig: "SPC(vov)", desc: "Prints `vov` spaces." },
-  SPLIT: {
-    sig: "SPLIT low, high[, high2] = vov",
-    desc: "Splits a variable into low and high bytes.",
-  },
-  STASH: {
-    sig: "STASH count, address, reu[, bank]",
-    desc: "Copies `count` C64 memory bytes at `address` to attached REU address `reu` in `bank`.",
-  },
-  STATUS: { sig: "STATUS", desc: "Reads and clears the STatus register." },
-  STOP: {
-    sig: "STOP",
-    desc: "Stops program execution but does not reset the screen.",
-  },
-  STR$: { sig: "STR$(vov)", desc: "Converts number `vov` into a string." },
-  STRINGS: {
-    sig: "STRINGS [size]",
-    desc: "With no parameter, stretches the string field to 53247, otherwise to `size`.",
-  },
-  SWAP: {
-    sig: "SWAP count, c64, reu[, bank]",
-    desc: "Swaps main memory at `c64` with REU memory at `reu` in `bank`.",
-  },
-  SWITCH: {
-    sig: "SWITCH start, end, start2",
-    desc: "Swaps memory at addresses `start-end` with memory starting at `start2`.",
-  },
-  SYS: {
-    sig: "SYS address[, A, X, Y, ST]",
-    desc: "Starts execution of ML code at `address`. A, X, Y, ST values loaded into registers if specified.",
-  },
-  TAB: {
-    sig: "TAB(vov)",
-    desc: "Moves the cursor to `vov` on the current line.",
-  },
-  THEN: {
-    sig: "THEN statement",
-    desc: "If the prior IF expression evaluated to TRUE, `statement` will be executed.",
-  },
-  TRAP: {
-    sig: "TRAP line#[, vop]",
-    desc: "Sends control to `line#` on error. `vop` if specified is a non-arrayed int that receives the address of the error.",
-  },
-  VAL: {
-    sig: "VAL(string)",
-    desc: "Returns the mathematical value of `string`.",
-  },
-  VERSION: {
-    sig: "VERSION number",
-    desc: "Specifies which version of Vision BASIC is needed to compile the block of code.",
-  },
-  WAIT: {
-    sig: "WAIT address, and, eor",
-    desc: "Waits for a non-0 result from PEEKing `address` and filtering with AND `and` and EOR `eor`.",
-  },
-  START: {
-    sig: "START [* =] address",
-    desc: "Specifies the starting location for an ML program. Must be placed at the very beginning of your ML program and only used once.",
-  },
+function renderMnemonic(name) {
+  const md = new vscode.MarkdownString();
+  md.appendCodeblock(name, "asm");
+  md.appendMarkdown(
+    "6502 mnemonic. Inside Vision BASIC, machine language lives in `[...]` " +
+      "brackets, statements are separated by `:`, and `;` starts a comment. " +
+      "Branches and jumps may target a BASIC line number directly, e.g. `JMP1000`.",
+  );
+  return md;
+}
+
+// ─── Context helpers ─────────────────────────────────────────────────────────
+
+/** True when the offset sits inside a `[...]` assembler block. */
+function inAssembly(line, character) {
+  const before = line.slice(0, character);
+  const open = before.lastIndexOf("[");
+  const close = before.lastIndexOf("]");
+  return open > close;
+}
+
+/** Strips the leading line number, if any. */
+function statementText(line) {
+  return line.replace(/^\s*\d+\s?/, "");
+}
+
+// ─── Providers ───────────────────────────────────────────────────────────────
+
+function hoverProvider() {
+  return vscode.languages.registerHoverProvider(LANG, {
+    provideHover(document, position) {
+      const range = document.getWordRangeAtPosition(
+        position,
+        /[A-Za-z][A-Za-z0-9!@#%&?]*\$?#?/,
+      );
+      if (!range) return null;
+      const word = document.getText(range).toUpperCase();
+      const line = document.lineAt(position.line).text;
+
+      if (inAssembly(line, range.start.character) && MNEMONICS.has(word)) {
+        return new vscode.Hover(renderMnemonic(word), range);
+      }
+
+      // "MODULE END" / "POINT TAG" — try the two-word form first.
+      const rest = line.slice(range.end.character);
+      const second = /^\s+([A-Za-z]+)/.exec(rest);
+      if (second) {
+        const pair = lookup(`${word} ${second[1].toUpperCase()}`);
+        if (pair) return new vscode.Hover(renderKeyword(pair), range);
+      }
+
+      const kw = lookup(word);
+      if (kw) return new vscode.Hover(renderKeyword(kw), range);
+      if (MNEMONICS.has(word))
+        return new vscode.Hover(renderMnemonic(word), range);
+      return null;
+    },
+  });
+}
+
+const COMPLETION_KIND = {
+  command: vscode.CompletionItemKind.Keyword,
+  function: vscode.CompletionItemKind.Function,
+  operator: vscode.CompletionItemKind.Operator,
+  conditional: vscode.CompletionItemKind.Keyword,
+  loop: vscode.CompletionItemKind.Keyword,
 };
 
-// ─── Important notes shown as warnings in hover ───────────────────────────────
-const MATH_WARNING =
-  "\n\n> ⚠️ **No parentheses in math!** Expressions evaluate strictly left-to-right.\n> e.g. `A=3+4:A=A*4` not `A=4*(3+4)`";
-const MATH_KEYWORDS = new Set([
-  "ABS",
-  "INT",
-  "SGN",
-  "WHOLE",
-  "FRAC",
-  "RANDOM",
-  "RND",
-  "ADD",
-  "SUBTRACT",
-  "COMPARE",
-  "HALF",
-  "DOUBLE",
-  "INC",
-  "DEC",
-]);
-const VAR_NOTE =
-  "\n\n> 📝 Variable names: max 8 chars, must start with a letter. Integers by default — use `DECIMAL` for floats. String vars end with `$`.";
+function completionProvider() {
+  return vscode.languages.registerCompletionItemProvider(LANG, {
+    provideCompletionItems(document, position) {
+      const line = document.lineAt(position.line).text;
 
-function activate(context) {
-  // ─── Hover Provider ─────────────────────────────────────────────────────────
-  const hoverProvider = vscode.languages.registerHoverProvider(
-    { language: "visionbasic" },
-    {
-      provideHover(document, position) {
-        const range = document.getWordRangeAtPosition(
-          position,
-          /[A-Za-z][A-Za-z0-9!@#%&?]{0,7}\$?/,
+      if (inAssembly(line, position.character)) {
+        return DB.mnemonics.map((m) => {
+          const item = new vscode.CompletionItem(
+            m,
+            vscode.CompletionItemKind.Operator,
+          );
+          item.detail = "6502 mnemonic";
+          item.documentation = renderMnemonic(m);
+          return item;
+        });
+      }
+
+      const items = [];
+      for (const kw of DB.keywords) {
+        if (kw.fragment) continue; // BMP/REU/LONG only exist inside composites
+        const label = kw.keyword.replace(/\($/, "");
+        const item = new vscode.CompletionItem(
+          label,
+          COMPLETION_KIND[kw.type] || vscode.CompletionItemKind.Keyword,
         );
-        if (!range) return null;
-
-        const word = document.getText(range).toUpperCase();
-        const doc = HOVER_DOCS[word];
-        if (!doc) return null;
-
-        let content = new vscode.MarkdownString();
-        content.isTrusted = true;
-
-        // Signature in code block
-        content.appendCodeblock(doc.sig, "visionbasic");
-        // Description
-        content.appendMarkdown(doc.desc);
-
-        // Append contextual warnings
-        if (MATH_KEYWORDS.has(word)) {
-          content.appendMarkdown(MATH_WARNING);
+        item.detail = `${DB.groups[kw.group]} · ${kw.syntax}`;
+        item.documentation = renderKeyword(kw);
+        if (kw.unimplemented) {
+          item.tags = [vscode.CompletionItemTag.Deprecated];
+          item.sortText = `zz${label}`;
         }
-        if (
-          word === "DIM" ||
-          word === "DECIMAL" ||
-          word === "TAG" ||
-          word === "VARIABLES"
-        ) {
-          content.appendMarkdown(VAR_NOTE);
-        }
-        if (word === "VOICE") {
-          content.appendMarkdown(
-            "\n\n> ⚠️ Must be called before FREQ, PULSE, ADSR, and WAVE.",
-          );
-        }
-        if (word === "HALTINT") {
-          content.appendMarkdown(
-            "\n\n> ⚠️ **Critical:** Always call HALTINT before exiting a program that uses interrupts.",
-          );
-        }
-        if (word === "PROC" || word === "SEND") {
-          content.appendMarkdown(
-            "\n\n> ⚠️ Strings and string variables cannot be returned from subroutines.",
-          );
-        }
-
-        return new vscode.Hover(content, range);
-      },
+        items.push(item);
+      }
+      return items;
     },
+  });
+}
+
+const SYMBOL_PATTERNS = [
+  // DESC 1000, DRAWSCREEN
+  {
+    re: /\bDESC\s+(\d+)\s*,\s*([A-Za-z][A-Za-z0-9!@#%&?]*)/i,
+    name: (m) => m[2],
+    detail: (m) => `line ${m[1]}`,
+    kind: () => vscode.SymbolKind.Function,
+  },
+  {
+    re: /\bPROC\s+([A-Za-z][A-Za-z0-9!@#%&?]*)/i,
+    name: (m) => m[1],
+    kind: () => vscode.SymbolKind.Function,
+  },
+  {
+    re: /\b(?:TAG|LABEL)\s+([A-Za-z][A-Za-z0-9!@#%&?]*)/i,
+    name: (m) => m[1],
+    kind: () => vscode.SymbolKind.Constant,
+  },
+  {
+    re: /\bMODULE\s+"([^"]+)"/i,
+    name: (m) => m[1],
+    kind: () => vscode.SymbolKind.Module,
+  },
+];
+
+function documentSymbolProvider() {
+  return vscode.languages.registerDocumentSymbolProvider(LANG, {
+    provideDocumentSymbols(document) {
+      const symbols = [];
+      for (let i = 0; i < document.lineCount; i++) {
+        const text = document.lineAt(i).text;
+        for (const p of SYMBOL_PATTERNS) {
+          const m = p.re.exec(text);
+          if (!m) continue;
+          const range = document.lineAt(i).range;
+          const sym = new vscode.DocumentSymbol(
+            p.name(m),
+            p.detail ? p.detail(m) : "",
+            p.kind(m),
+            range,
+            range,
+          );
+          symbols.push(sym);
+          break;
+        }
+      }
+      return symbols;
+    },
+  });
+}
+
+function definitionProvider() {
+  return vscode.languages.registerDefinitionProvider(LANG, {
+    provideDefinition(document, position) {
+      const line = document.lineAt(position.line).text;
+
+      // GOTO 1000 / GOSUB 1000 / THEN 1000 → the line with that number.
+      const numRange = document.getWordRangeAtPosition(position, /\d+/);
+      if (numRange && numRange.start.character > 0) {
+        const target = document.getText(numRange);
+        for (let i = 0; i < document.lineCount; i++) {
+          const m = /^\s*(\d+)/.exec(document.lineAt(i).text);
+          if (m && m[1] === target) {
+            return new vscode.Location(document.uri, new vscode.Position(i, 0));
+          }
+        }
+      }
+
+      // A tag / PROC name → its DESC, PROC, TAG or LABEL definition.
+      const wordRange = document.getWordRangeAtPosition(
+        position,
+        /[A-Za-z][A-Za-z0-9!@#%&?]*/,
+      );
+      if (!wordRange) return null;
+      const word = document.getText(wordRange);
+      if (lookup(word)) return null; // it's a keyword, not a tag
+      void line;
+
+      const def = new RegExp(
+        `\\b(?:DESC\\s+\\d+\\s*,|TAG|LABEL|PROC)\\s+${word}\\b`,
+        "i",
+      );
+      for (let i = 0; i < document.lineCount; i++) {
+        const m = def.exec(document.lineAt(i).text);
+        if (m) {
+          return new vscode.Location(
+            document.uri,
+            new vscode.Position(i, m.index),
+          );
+        }
+      }
+      return null;
+    },
+  });
+}
+
+// ─── Diagnostics ─────────────────────────────────────────────────────────────
+
+function makeDiagnostics(context) {
+  const collection = vscode.languages.createDiagnosticCollection(LANG);
+  context.subscriptions.push(collection);
+
+  const unimplemented = DB.keywords
+    .filter((k) => k.unimplemented)
+    .map((k) => k.keyword);
+  const unimplementedRe = new RegExp(
+    `\\b(${unimplemented.join("|")})\\b`,
+    "gi",
   );
 
-  // ─── Status Bar: show BASIC/ML mode indicator ────────────────────────────────
+  function check(document) {
+    if (!document || document.languageId !== LANG) return;
+    const cfg = vscode.workspace.getConfiguration(LANG);
+    if (!cfg.get("diagnostics.enabled", true)) {
+      collection.delete(document.uri);
+      return;
+    }
+    // Tags, labels and PROC names live in their own table; the 8-character
+    // rule below is about variables, so collect the declared names and skip
+    // them rather than nagging about every DESC label.
+    const declared = new Set();
+    const declRe =
+      /\b(?:DESC\s+\d+\s*,|TAG|LABEL|PROC|POINT\s+TAG)\s+([A-Za-z][A-Za-z0-9!@#%&?]*)/gi;
+    for (let i = 0; i < document.lineCount; i++) {
+      const text = document.lineAt(i).text;
+      declRe.lastIndex = 0;
+      let m;
+      while ((m = declRe.exec(text)) !== null) declared.add(m[1].toUpperCase());
+    }
+
+    const diags = [];
+    for (let i = 0; i < document.lineCount; i++) {
+      const raw = document.lineAt(i).text;
+      // Ignore comments and string literals — cheap but effective.
+      const code = statementText(raw)
+        .replace(/"[^"]*"?/g, (s) => " ".repeat(s.length))
+        .replace(/(\bREM\b|;).*$/i, (s) => " ".repeat(s.length));
+
+      unimplementedRe.lastIndex = 0;
+      let m;
+      while ((m = unimplementedRe.exec(code)) !== null) {
+        const offset = raw.length - code.length + m.index;
+        diags.push(
+          new vscode.Diagnostic(
+            new vscode.Range(i, offset, i, offset + m[0].length),
+            `${m[0].toUpperCase()} is a BASIC V2 function that Vision BASIC does not implement.`,
+            vscode.DiagnosticSeverity.Warning,
+          ),
+        );
+      }
+
+      // Variable names are significant to 8 characters; the rest is ignored.
+      const nameRe =
+        /(?<![A-Za-z0-9!@#%&?$.])([A-Za-z][A-Za-z0-9!@#%&?]{8,})\$?/g;
+      let v;
+      while ((v = nameRe.exec(code)) !== null) {
+        const upper = v[1].toUpperCase();
+        if (lookup(upper) || MNEMONICS.has(upper) || declared.has(upper))
+          continue;
+        const offset = raw.length - code.length + v.index;
+        const d = new vscode.Diagnostic(
+          new vscode.Range(i, offset, i, offset + v[1].length),
+          `"${v[1]}" is longer than 8 characters; Vision BASIC ignores everything past "${v[1].slice(0, 8)}".`,
+          vscode.DiagnosticSeverity.Information,
+        );
+        diags.push(d);
+      }
+    }
+    collection.set(document.uri, diags);
+  }
+
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeTextDocument((e) => check(e.document)),
+    vscode.workspace.onDidOpenTextDocument(check),
+    vscode.workspace.onDidCloseTextDocument((d) => collection.delete(d.uri)),
+  );
+  vscode.workspace.textDocuments.forEach(check);
+  return check;
+}
+
+// ─── Status bar / comment mode ───────────────────────────────────────────────
+
+function makeStatusBar(context) {
   const statusBar = vscode.window.createStatusBarItem(
     vscode.StatusBarAlignment.Right,
     100,
   );
   statusBar.command = "visionbasic.toggleCommentMode";
-
   let mlMode = false;
 
-  function updateStatusBar() {
+  function render() {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor || editor.document.languageId !== LANG) {
+      statusBar.hide();
+      return;
+    }
     statusBar.text = mlMode
       ? "$(circuit-board) VB: ML mode"
       : "$(code) VB: BASIC mode";
@@ -764,48 +388,168 @@ function activate(context) {
     statusBar.show();
   }
 
-  // ─── Comment Mode Toggle Command ─────────────────────────────────────────────
-  const toggleCmd = vscode.commands.registerCommand(
+  const toggle = vscode.commands.registerCommand(
     "visionbasic.toggleCommentMode",
     () => {
       mlMode = !mlMode;
-      updateStatusBar();
-
-      // Update the editor's comment config by notifying the user
-      // (VSCode doesn't let extensions change commentString at runtime,
-      //  but we show a hint and the status bar makes the mode clear)
-      const modeLabel = mlMode ? "ML mode (;)" : "BASIC mode (REM)";
-      vscode.window.showInformationMessage(
-        `Vision BASIC: switched to ${modeLabel}`,
+      // VS Code caches language-configuration comment tokens per language, so
+      // rewrite the whole configuration to change the line comment at runtime.
+      vscode.languages.setLanguageConfiguration(LANG, {
+        comments: { lineComment: mlMode ? ";" : "REM" },
+      });
+      render();
+      vscode.window.setStatusBarMessage(
+        `Vision BASIC: ${mlMode ? "ML comments (;)" : "BASIC comments (REM)"}`,
+        2000,
       );
     },
   );
 
-  // Show status bar when a visionbasic file is active
-  const editorChangeDisposable = vscode.window.onDidChangeActiveTextEditor(
-    (editor) => {
-      if (editor && editor.document.languageId === "visionbasic") {
-        updateStatusBar();
-      } else {
-        statusBar.hide();
+  context.subscriptions.push(
+    statusBar,
+    toggle,
+    vscode.window.onDidChangeActiveTextEditor(render),
+  );
+  render();
+}
+
+// ─── Commands ────────────────────────────────────────────────────────────────
+
+function renumberCommand() {
+  return vscode.commands.registerCommand("visionbasic.renumber", async () => {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor || editor.document.languageId !== LANG) return;
+
+    const start = await vscode.window.showInputBox({
+      prompt: "First line number",
+      value: "10",
+      validateInput: (v) => (/^\d+$/.test(v) ? null : "Digits only"),
+    });
+    if (start === undefined) return;
+    const step = await vscode.window.showInputBox({
+      prompt: "Increment",
+      value: "10",
+      validateInput: (v) => (/^[1-9]\d*$/.test(v) ? null : "Positive integer"),
+    });
+    if (step === undefined) return;
+
+    const doc = editor.document;
+    const map = new Map(); // old line number -> new line number
+    let next = parseInt(start, 10);
+    const inc = parseInt(step, 10);
+    for (let i = 0; i < doc.lineCount; i++) {
+      const m = /^\s*(\d+)/.exec(doc.lineAt(i).text);
+      if (!m) continue;
+      map.set(m[1], String(next));
+      next += inc;
+    }
+
+    await editor.edit((edit) => {
+      for (let i = 0; i < doc.lineCount; i++) {
+        const line = doc.lineAt(i);
+        const text = renumberLine(line.text, map);
+        if (text !== line.text) edit.replace(line.range, text);
       }
+    });
+  });
+}
+
+// Which arguments of a keyword are line numbers:
+//   "all"  every number in the comma-separated list  (ON A GOTO 10,20,30)
+//   1      only the first                            (TRAP 9000, ERRADDR)
+//   2      only the second                           (INTERRUPT 100, 1000)
+// POINT is handled separately: its line number follows an "=".
+const LINE_REFERENCES = [
+  {
+    re: /\b(?:GOTO|GOSUB|THEN|ELSE)\b(\s*\d+\s*(?:,\s*\d+\s*)*)/gi,
+    which: "all",
+  },
+  { re: /\b(?:DESC|TRAP|DO)\b(\s*\d+\s*(?:,\s*\d+\s*)*)/gi, which: 1 },
+  { re: /\bINTERRUPT\b(\s*\d+\s*(?:,\s*\d+\s*)*)/gi, which: 2 },
+];
+const POINT_REFERENCE =
+  /(\bPOINT\b(?:\s+TAG)?\s+[A-Za-z][A-Za-z0-9!@#%&?]*\s*=\s*)(\d+)/gi;
+
+function mapArgs(args, which, map) {
+  let index = 0;
+  return args
+    .split(",")
+    .map((part) => {
+      if (!/^\s*\d+\s*$/.test(part)) return part;
+      index += 1;
+      if (which !== "all" && which !== index) return part;
+      return part.replace(/\d+/, (n) => map.get(n) || n);
+    })
+    .join(",");
+}
+
+/** Renumber one line and every line-number reference it contains. */
+function renumberLine(text, map) {
+  // Leave anything from a REM or ML comment onwards untouched.
+  const cut = text.search(/\bREM\b|;/i);
+  let code = cut < 0 ? text : text.slice(0, cut);
+  const tail = cut < 0 ? "" : text.slice(cut);
+
+  code = code.replace(/^(\s*)(\d+)/, (_, ws, n) => ws + (map.get(n) || n));
+  for (const { re, which } of LINE_REFERENCES) {
+    re.lastIndex = 0;
+    code = code.replace(
+      re,
+      (whole, args) =>
+        whole.slice(0, whole.length - args.length) + mapArgs(args, which, map),
+    );
+  }
+  POINT_REFERENCE.lastIndex = 0;
+  code = code.replace(
+    POINT_REFERENCE,
+    (_, head, n) => head + (map.get(n) || n),
+  );
+
+  return code + tail;
+}
+
+function insertLineNumbersCommand() {
+  return vscode.commands.registerCommand(
+    "visionbasic.numberSelection",
+    async () => {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor || editor.document.languageId !== LANG) return;
+      const start = await vscode.window.showInputBox({
+        prompt: "First line number",
+        value: "10",
+        validateInput: (v) => (/^\d+$/.test(v) ? null : "Digits only"),
+      });
+      if (start === undefined) return;
+      let next = parseInt(start, 10);
+      const sel = editor.selection;
+      await editor.edit((edit) => {
+        for (let i = sel.start.line; i <= sel.end.line; i++) {
+          const line = editor.document.lineAt(i);
+          if (!line.text.trim() || /^\s*\d/.test(line.text)) continue;
+          edit.insert(new vscode.Position(i, 0), `${next} `);
+          next += 10;
+        }
+      });
     },
   );
+}
 
-  // Show immediately if already open
-  if (
-    vscode.window.activeTextEditor &&
-    vscode.window.activeTextEditor.document.languageId === "visionbasic"
-  ) {
-    updateStatusBar();
-  }
+// ─── Activation ──────────────────────────────────────────────────────────────
+
+function activate(context) {
+  loadDatabase(context);
 
   context.subscriptions.push(
-    hoverProvider,
-    toggleCmd,
-    statusBar,
-    editorChangeDisposable,
+    hoverProvider(),
+    completionProvider(),
+    documentSymbolProvider(),
+    definitionProvider(),
+    renumberCommand(),
+    insertLineNumbersCommand(),
   );
+
+  makeDiagnostics(context);
+  makeStatusBar(context);
 }
 
 function deactivate() {}

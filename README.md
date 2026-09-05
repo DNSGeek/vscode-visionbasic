@@ -1,91 +1,122 @@
-# Vision BASIC — VSCode Extension
+# Vision BASIC — VS Code Extension
 
-Syntax highlighting, hover documentation, snippets and tools for **Vision BASIC** — the enhanced Commodore 64 BASIC environment.
+Language support for [Vision BASIC](https://www.visionbasic.net) — Dennis
+Osborn's compiled BASIC for the Commodore 64.
+
+Everything here is derived from the VisionBASIC plugin definition shipped with
+the C64 IDE: token values extracted from the table at `$AC31` in
+`VISION BASIC.VEX`, keyword documentation from the Vision BASIC Cheat Sheet.
+All **210 keywords** are covered, plus the 56 6502 mnemonics.
 
 ## Features
 
-### Syntax Highlighting
+### Syntax highlighting
 
-Full TextMate grammar covering every command category:
+Every keyword, scoped by category so it picks up your theme's colours:
 
-| Category            | Examples                                              |
-| ------------------- | ----------------------------------------------------- |
-| Editing keywords    | `LIST`, `RUN`, `COMP`, `RENUM`, `ASSEM`, `BASIC`      |
-| Disk commands       | `LOAD`, `SAVE`, `DIR`, `DISK`, `VERIFY`               |
-| Math functions      | `ABS`, `INT`, `RND`, `RANDOM`, `FRAC`                 |
-| Speedy math         | `INC`, `DEC`, `ADD`, `SUBTRACT`, `HALF`, `DOUBLE`     |
-| Bitmap commands     | `PLOT`, `LINE`, `HLINE`, `VLINE`, `BITMAP`            |
-| Sprite/MOB commands | `MOB`, `MOBXY`, `SHAPE`, `COLLISION`, `DETECT`        |
-| Interrupt commands  | `INTERRUPT`, `STARTINT`, `HALTINT`, `RASTER`          |
-| SID sound commands  | `VOICE`, `FREQ`, `ADSR`, `WAVE`, `SIDCLR`             |
-| Text video commands | `COLORS`, `CHARSET`, `PANX`, `PANY`, `VIDLOC`         |
-| Assembler blocks    | `[LDA #1: STA $D020]` highlighted with 6502 mnemonics |
-| ML comments         | `;` inside assembler blocks                           |
-| BASIC comments      | `REM` lines                                           |
-| Strings             | `"quoted strings"`                                    |
-| String variables    | `NAME$`, `SCORE$`                                     |
-| Hex numbers         | `$D020`, `$FF00`                                      |
-| Line numbers        | Leading digits on each line                           |
+| Category            | Examples                                                                                   |
+| ------------------- | ------------------------------------------------------------------------------------------ |
+| Editor & compiler   | `LIST`, `RUN`, `COMP`, `RENUM`, `LISTER`, `MODULE`, `HALT`                                 |
+| Assembler           | `ASSEM`, `BASIC`, `START`, `LABEL`, `SYS`                                                  |
+| Flow & loops        | `IF`/`THEN`/`ELSE`, `FOR`/`NEXT`/`DO`, `GOTO`, `PROC`, `PASS`, `SEND`                      |
+| Variables & types   | `DECIMAL`, `DIM`, `DEF`, `TAG`, `LOCAL`, `GLOBAL`                                          |
+| Math & strings      | `ABS`, `WHOLE`, `FRAC`, `INC`, `ADD`; `CHR$`, `MID$`, `DUP$`                               |
+| Bitmap & sprites    | `PLOT`, `LINE`, `BITMAP`, `MOBXY`, `SHAPE`, `COLLISION`                                    |
+| SID sound           | `VOICE`, `FREQ`, `ADSR`, `WAVE`, `SIDCLR`                                                  |
+| Screen, memory, I/O | `COLORS`, `CHARSET`, `PANX`; `STASH`, `FETCH`, `REUPEEK`; `LOAD`, `DISK`, `JOY`            |
+| System & interrupts | `INTERRUPT`, `STARTINT`, `HALTINT`, `RASTER`, `PAUSE`                                      |
+| Not implemented     | `SQR`, `SIN`, `COS`, `LOG`, `USR`, … flagged as deprecated — Vision BASIC has none of them |
 
-### Hover Documentation
+Plus assembler blocks (`[LDA #1: STA $D020]` with 6502 mnemonics scoped
+separately), `$D020` hex and `%10101010` binary literals, `{CLR}` PETSCII
+escapes inside strings, string variables, tag and `PROC` definitions, named
+subroutine calls (`DRAWBOX.X,Y`), and line numbers — both the leading number
+and the `GOTO`/`GOSUB` targets that reference it.
 
-Hover over **any Vision BASIC keyword** to see its full signature and description pulled from the DNSGeek cheat sheet, including:
+`REM` swallows the rest of the line, so a keyword mentioned inside a comment is
+not highlighted as code.
 
-- Complete parameter lists
-- Contextual warnings (e.g. "VOICE must be called before FREQ/ADSR/WAVE")
-- Math expression reminders (no parentheses! left-to-right only!)
-- Subroutine limitations (no string return values)
+### Hover documentation
+
+Hover any keyword for its syntax, description, a parameter table with valid
+ranges, an example, and the contextual warnings that matter:
+
+- `VOICE` must come before `FREQ`, `PULSE`, `ADSR` and `WAVE`
+- `HALTINT` before exiting a program that uses interrupts
+- the no-parentheses, strictly-left-to-right math rule
+- the 8-character variable limit
+- whether the command is ML-safe (usable inside an `ASSEM` block)
+- how composite keywords are tokenised (`BMPCLR` = `BMP` + `CLR`)
+
+Hovering a 6502 mnemonic inside `[...]` explains ML mode instead.
+
+### Completion
+
+All 210 keywords with their syntax and full documentation. Inside a `[...]`
+block it offers 6502 mnemonics instead. Unimplemented BASIC V2 keywords are
+marked deprecated and sorted last.
+
+### Outline & go-to-definition
+
+`DESC` labels, `PROC` names, `TAG`/`LABEL` constants and `MODULE` names appear
+in the outline and breadcrumbs. `F12` jumps from a `GOTO`/`GOSUB`
+target to that line, or from a tag to where it is defined.
+
+### Diagnostics
+
+- Use of a BASIC V2 keyword Vision BASIC does not implement (warning)
+- Variable names longer than 8 characters, where the rest is silently ignored
+  (information) — tags, labels and `PROC` names declared in the file are exempt
+
+Turn them off with `"visionbasic.diagnostics.enabled": false`.
+
+### Line numbering
+
+| Command                                         | Does                                         |
+| ----------------------------------------------- | -------------------------------------------- |
+| **Vision BASIC: Renumber lines**                | Renumber the file and follow every reference |
+| **Vision BASIC: Add line numbers to selection** | Number unnumbered lines                      |
+
+Renumbering knows which arguments are actually line numbers: all of them after
+`GOTO`, `GOSUB`, `THEN` and `ELSE` (including `ON A GOTO 10,20,30`), the first
+after `DESC`, `TRAP` and `DO`, the **second** after `INTERRUPT` (the first is a
+raster line), and the target of `POINT`. Text inside `REM` and `;` comments is
+left alone.
 
 ### Snippets
 
-Type a prefix and hit Tab for common patterns:
+30 snippets: `vbprog`, `for`, `forstep`, `do`, `if`, `on`, `sub`, `proc`,
+`desc`, `trap`, `interrupt`, `mob`, `mobxy`, `collision`, `sound`, `bitmap`,
+`box`, `data`, `asm`, `assem`, `module`, `def`, `local`, `poke`, `joy`, `key`,
+`reu`, `openread`, `disk`, `comp`.
 
-| Prefix      | Snippet                             |
-| ----------- | ----------------------------------- |
-| `for`       | FOR-TO-NEXT loop                    |
-| `if`        | IF-THEN-ELSE block                  |
-| `sub`       | GOSUB subroutine skeleton           |
-| `proc`      | PROC subroutine with parameter      |
-| `interrupt` | Raster interrupt skeleton           |
-| `mob`       | Sprite/MOB setup                    |
-| `sound`     | SID voice setup                     |
-| `bitmap`    | Bitmap mode enable                  |
-| `data`      | DATA block with READ loop           |
-| `asm`       | Inline assembler block              |
-| `poke`      | POKE screen colors                  |
-| `joy`       | Joystick read with direction checks |
+### BASIC / ML comment mode
 
-### BASIC/ML Mode Indicator
-
-The status bar shows whether you're in **BASIC mode** (REM comments) or **ML mode** (; comments). Click it to toggle. Affects your mental model when writing mixed BASIC/assembler code.
+The status bar shows whether you are in BASIC mode (`REM` comments) or ML mode
+(`;` comments). Click it to toggle — the editor's comment command follows.
 
 ## Installation
 
-### From source (development)
-
-1. Copy the `vscode-visionbasic/` folder to your VSCode extensions directory:
-   - **macOS/Linux**: `~/.vscode/extensions/visionbasic-0.1.0/`
-   - **Windows**: `%USERPROFILE%\.vscode\extensions\visionbasic-0.1.0\`
-
-2. Restart VSCode.
-
-3. Open a `.bas` file and select **Vision BASIC** as the language if VSCode doesn't pick it up automatically (use `Ctrl+K M` / `Cmd+K M`).
-
-### Package as .vsix (optional)
+### From a package
 
 ```bash
-cd vscode-visionbasic
 npm install
 npx vsce package
-code --install-extension visionbasic-0.1.0.vsix
+code --install-extension visionbasic-0.2.0.vsix
 ```
 
-## The `.bas` Extension Conflict
+### From source
 
-`.bas` is also used by Visual Basic and other BASIC dialects. If VSCode picks the wrong language:
+Copy this folder to your extensions directory and restart VS Code:
 
-- Press `Ctrl+K M` (macOS: `Cmd+K M`) and choose **Vision BASIC**
-- Or add to your workspace `.vscode/settings.json`:
+- **macOS/Linux**: `~/.vscode/extensions/visionbasic-0.2.0/`
+- **Windows**: `%USERPROFILE%\.vscode\extensions\visionbasic-0.2.0\`
+
+## The `.bas` extension conflict
+
+`.bas` is shared with Visual Basic and other BASIC dialects. The extension also
+registers `.vb64` and `.vbas`. If VS Code picks the wrong language, press
+`Ctrl+K M` (`Cmd+K M` on macOS) and choose **Vision BASIC**, or pin it per workspace:
 
 ```json
 {
@@ -95,37 +126,42 @@ code --install-extension visionbasic-0.1.0.vsix
 }
 ```
 
-## Vision BASIC Quick Reference
+## Vision BASIC quirks
 
-### Critical Quirks
+- **No parentheses in math**, and no operator precedence — strictly left to
+  right. `4+3*5-2*6` is `(((4+3)*5)-2)*6` = 198.
+- **Variable names** start with a letter and are significant to 8 characters;
+  `!@#%&?` and digits are allowed. A name may contain a keyword but may not
+  start with one.
+- **Everything is an integer** unless declared `DECIMAL`. Strings end in `$`.
+- **Machine language** is entered with `ASSEM` and left with `BASIC`; mnemonics
+  go in `[]`, statements inside them are separated by `:`, and `;` starts a
+  comment. Branches and jumps may target a BASIC line number directly
+  (`JMP1000`).
 
-- **No parentheses in math**: `A=3+4:A=A*4` not `A=4*(3+4)`
-- **Strict left-to-right evaluation**: `4+3*5` = 35, not 19
-- **Variable names**: max 8 characters, must start with a letter
-- **Strings**: variable names must end with `$`
-- **Integer by default**: use `DECIMAL` to declare floating point variables
-- **Tags**: cannot be to the left of an `=` sign in a math expression
+  ```basic
+  10 ASSEM
+  20 [LDA #1: ORA #1: STA $D020] ; set border colour
+  30 BASIC
+  ```
 
-### Assembler Mode
+  ML-safe commands: `START`, `GOTO`, `GOSUB`, `RETURN`, `REM`, `TAG`, `PROC`,
+  `MODULE`, `LOCAL`, `GLOBAL`, `ADD`, `SUBTRACT`, `COMPARE`, `HALF`, `DOUBLE`,
+  `VARIABLES`, `HALT`, `RESUME`, `VERSION`, `DEBUG`, `STARTINT`, `RASTER`,
+  `BYTES`, `STRINGS`.
 
-```
-10 ASSEM
-20 [LDA #1: ORA #1: STA $D020]; set border color
-30 BASIC
-```
+- **Always `HALTINT`** before exiting a program that uses raster interrupts.
+- `USR`, `FRE`, `POS`, `SQR`, `LOG`, `EXP`, `COS`, `SIN`, `TAN` and `ATN` are
+  **not implemented**.
 
-- Enter with `ASSEM`, exit with `BASIC`
-- Mnemonics go inside `[]` brackets
-- Comments inside ML use `;`
-- ML-safe BASIC commands: `START`, `GOTO`, `GOSUB`, `RETURN`, `REM`, `TAG`, `PROC`, `MODULE`, `LOCAL`, `GLOBAL`, `ADD`, `SUBTRACT`, `COMPARE`, `HALF`, `DOUBLE`, `VARIABLES`, `HALT`, `RESUME`, `VERSION`, `DEBUG`, `STARTINT`, `RASTER`, `BYTES`, `STRINGS`
+## Regenerating
 
-### Sound (SID)
+See [tools/README.md](tools/README.md). `data/visionbasic.json` and the TextMate
+grammar are generated from the C64 IDE plugin definition — edit the generators,
+not the output.
 
-Always call `VOICE` before `FREQ`, `PULSE`, `ADSR`, and `WAVE`.
-
-### Interrupts
-
-Always call `HALTINT` before exiting a program that uses raster interrupts.
+There is a matching [Vim plugin](https://github.com/DNSGeek/vim-visionbasic)
+built from the same source.
 
 ## License
 
